@@ -1,0 +1,41 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "c/customStep": [
+                "../../../../force-app/main/default/lwc/customStep/customStep.js"
+            ],
+            "c/landing": ["landing/landing.js"],
+            "c/modal": ["modal/modal.js"],
+            "c/setup": ["setup/setup.js"],
+            "c/step": ["step/step.js"],
+            "c/wizard": ["wizard/wizard.js"],
+            "c/picklist": [
+                "../../../../Strike Picklist/force-app/main/default/lwc/picklist/picklist.js"
+            ],
+            "c/picklistOption": [
+                "../../../../Strike Picklist/force-app/main/default/lwc/picklistOption/picklistOption.js"
+            ],
+            "c/dataMapper": [
+                "../../../../Strike Data Mapper/force-app/main/default/lwc/dataMapper/dataMapper.js"
+            ],
+            "c/lookup": [
+                "../../../../Strike Lookup/force-app/main/default/lwc/lookup/lookup.js"
+            ],
+            "c/lookupOption": [
+                "../../../../Strike Lookup/force-app/main/default/lwc/lookupOption/lookupOption.js"
+            ],
+            "c/connector": [
+                "../../../../Strike Connector/force-app/main/default/lwc/connector/connector.js"
+            ]
+        },
+        "experimentalDecorators": true
+    },
+    "include": ["**/*", "../../../../.sfdx/typings/lwc/**/*.d.ts"],
+    "typeAcquisition": {
+        "include": ["jest"]
+    },
+    "paths": {
+        "c/*": ["*"]
+    }
+}
