@@ -1,0 +1,19 @@
+<template>
+    <c-landing is-classic={isClassic}></c-landing>
+
+    <!-- Wizards and Steps -->
+    <c-wizard description="Configure your... (Summarize the need to complete this wizard)" setup show-close>
+        <c-step header="Step 1 Header" back-hidden>
+            <p slot="description">This application will require you to... (Describe why the admin is configuring this step)</p>
+        </c-step>
+        <c-step header="Step 2 Header" next-label="Finish" next-icon-name="utility:check">
+            <p slot="description">This application will require you to... (Describe why the admin is configuring this step)</p>
+        </c-step>
+    </c-wizard>
+    <c-wizard description="Configure your... (Summarize the need to complete this wizard)" setup show-close>
+        <c-step header="Step 1 Header" back-hidden next-label="Finish" next-icon-name="utility:check">
+            <p slot="description">This application will require you to... (Describe why the admin is configuring this step)</p>
+        </c-step>
+    </c-wizard>
+    <!-- /Wizards and Steps -->
+</template>
