@@ -1,0 +1,32 @@
+<template>
+    <c-step
+        header="Connect Salesforce to Rightsline"
+        back-hidden
+        container-size="small"
+    >
+        <div slot="description">
+            <p>Enter your Rightsline <strong>API Key</strong>, <strong>Access Key</strong>, and <strong>Secret Key</strong> to allow Salesforce to sync data from your Rightsline account. These credentials can be found in <strong>My Account</strong> in Rightsline. You can always return to this step to deauthorize this connection.</p>
+        </div>
+
+        <lightning-spinner 
+            if:true={loading}
+            alternative-text="spinner"
+        ></lightning-spinner>
+
+        <div class="slds-var-p-around_medium">
+            <div class="slds-form-element slds-var-m-bottom_small">
+                <lightning-input
+                    label="API Key">
+                </lightning-input>
+                <lightning-input
+                    label="Access Key">
+                </lightning-input>
+                <lightning-input
+                    label="Secret">
+                </lightning-input>
+            </div>
+            <c-connector>
+            </c-connector>
+        </div>
+    </c-step>
+</template>
