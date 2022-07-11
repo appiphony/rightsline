@@ -1,0 +1,18 @@
+<template>
+    <c-step
+        header="Configure Contact Sync Component"
+        back-hidden
+        container-size="small"
+    >
+        <div slot="description">
+            <p>This app is packaged with a Custom Property Editor Lightning Component that can be used to customize Salesforce Flow actions. Follow these steps to add the Contact Sync component to a Flow and configure its custom properties.</p>
+        </div>
+        <ol class="slds-list_ordered slds-var-p-around_medium">
+            <li>Go to <strong><a>Flows</a></strong> in Salesforce Setup. Create a new Screen Flow or select an existing one to edit in Flow Builder.</li>
+            <li>Add a <strong>Screen Element</strong> to your Flow, or choose an existing one to edit.</li>
+            <li>In the <strong>Edit Screen</strong> modal, drag the <strong>Ongoing Contact Sync</strong> component onto the Screen.</li>
+            <li>In the modal's right-hand sidebar, configure the Ongoing Contact Sync component by entering an <strong>Object API Name</strong> &amp; <strong>Record ID</strong> and selecting an operation to be run as the Flow action executes.</li>
+            <li>Save your Flow and repeat as necessary for other Flows in your organization.</li>
+        </ol>
+    </c-step>
+</template>

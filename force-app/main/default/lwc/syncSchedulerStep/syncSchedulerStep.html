@@ -1,0 +1,131 @@
+<template>
+    <c-step header="Schedule Initial Data Sync Job" container-size="small" onnext={handleNext} next-disabled={nextDisabled} next-label="Finish">
+        <!-- <template if:true={loading}>
+            <lightning-spinner alternative-text="spinner"></lightning-spinner>
+        </template> -->
+        <span slot="description">
+            <div class="slds-container_small slds-container_center">
+                <p class="slds-m-bottom_x-small">Once you've configured your data sync settings, you can schedule a time for Salesforce to perform its initial sync with Rightsline. This will add all mapped contacts from this Salesforce org to your Rightsline account.</p>
+            </div>
+        </span>
+        <div class="slds-m-around_large">
+            <div class="slds-scoped-notification slds-media slds-scoped-notification_light slds-m-bottom_medium">
+                <div class="slds-media__body">
+                    <p class="slds-m-bottom_x-small slds-text-align_center">This data sync job will run only once. When you're ready, schedule a time for it to run in the next day.</p>
+                </div>
+            </div>
+            <div class="slds-grid slds-gutters_direct-xx-small">
+                <div class="slds-col">
+                    <c-picklist
+                    options={options}
+                    value={value}
+                    onchange={updateValue}
+                    onselect={updateValue}
+                    label="Job Start Time"
+                    disabled={isActive}
+                    >
+                    </c-picklist>
+                </div>
+                <div class="slds-col slds-m-top_large slds-align_bottom slds-no-flex">
+                    <div class="slds-col">
+                        <template if:true={isActive}>
+                            <lightning-button
+                            label="Deactivate"
+                            onclick={openBatchModal}
+                            variant="destructive"
+                            >
+                            </lightning-button>
+                        </template>
+                        <template if:false={isActive}>
+                            <lightning-button
+                            label="Schedule Job"
+                            onclick={openBatchModal}
+                            disabled={scheduleDisabled}>
+                            </lightning-button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+            <hr class="slds-m-vertical_large"></hr>
+            <!-- Other Scheduled Jobs -->
+            <div class="slds-scoped-notification slds-media slds-scoped-notification_light slds-m-bottom_medium">
+                <div class="slds-media__body">
+                    <p class="slds-m-bottom_x-small slds-text-align_center">Below are all other scheduled Apex jobs in your Salesforce org. Avoid scheduling your initial data sync at the same time as the Apex jobs listed.</p>
+                </div>
+            </div>
+            <h3 class="slds-text-heading_small">
+                Other Scheduled Jobs
+            </h3>
+            <table
+                class="slds-m-top_small slds-table slds-table_bordered slds-table_col-bordered slds-no-row-hover slds-border_left slds-border_right">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" class="slds-size_2-of-3">
+                            <div class="slds-truncate" title="Job Name">Job Name</div>
+                        </th>
+                        <th scope="col" class="slds-size_1-of-3">
+                            <div class="slds-truncate" title="Next Run Time">Next Run Time</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template if:false={otherJobs}>
+                        <tr>
+                            <td colspan="2">
+                                <div class="slds-truncate slds-align_absolute-center" title="Other Job">
+                                    <em><span class="slds-text-align_center slds-text-color_weak">There are no other scheduled jobs in this Salesforce org.</span></em>
+                                </div>
+                            </td>
+
+                        </tr>
+                    </template>
+                    <template if:true={otherJobs}>
+                        <template for:each={otherJobs} for:item="otherJob">
+                            <tr key={otherJob.Id}>
+                                <td>
+                                    <div class="slds-truncate" title={otherJob.Name}>
+                                        {otherJob.Name}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="slds-truncate" title={otherJob.NextFireTime}>
+                                        {otherJob.nextFireTime}
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </c-step>
+    <c-modal
+        class="batchModal"
+        title={modalTitle}
+        onsecondary={cancelBatchModal}>
+        <div slot="" class="slds-text-align_center slds-is-relative slds-p-around_x-small">
+            <template if:true={loading}>
+                <lightning-spinner alternative-text="spinner"></lightning-spinner>
+            </template>
+            <template if:false={isActive}>
+                <p>Are you sure you want to activate this job?</p>
+            </template>
+            <template if:true={isActive}>
+                <p>Are you sure you want to deactivate this job?</p>
+            </template>
+        </div>
+        <lightning-button
+            slot="footer"
+            variant="neutral"
+            label="Cancel"
+            onclick={cancelBatchModal}>
+        </lightning-button>
+        <lightning-button
+            slot="footer"
+            variant={modalButtonVariant}
+            label={modalButtonLabel}
+            onclick={confirmBatchModal}
+            class="slds-m-left_x-small">
+        </lightning-button>
+    </c-modal>
+</template>
