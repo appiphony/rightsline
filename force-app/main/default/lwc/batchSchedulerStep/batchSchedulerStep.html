@@ -1,0 +1,166 @@
+<template>
+    <c-step header="Scheduled Data Sync with Apex Jobs" onnext={handleNext} next-disabled={nextDisabled} next-label="Finish">
+        <!-- <template if:true={loading}>
+            <lightning-spinner alternative-text="spinner"></lightning-spinner>
+        </template> -->
+        <span slot="description">
+            <div class="slds-container_medium slds-container_center">
+                <p class="slds-m-bottom_x-small">Salesforce uses Apex jobs to automate processes such as data sync with third-party entities like Rightsline. You'll need to schedule a regular time for your Salesforce org to send data to Rightsline.</p>
+            </div>
+        </span>
+        <div class="slds-m-around_large">
+            <div class="slds-scoped-notification slds-media slds-scoped-notification_light slds-m-bottom_medium">
+                <div class="slds-media__body">
+                    <p class="slds-m-bottom_x-small slds-text-align_center">Choose how often the Inbound Data Sync job sends data from Salesforce to Rightsline.</p>
+                </div>
+            </div>
+            <div class="slds-grid slds-gutters_direct-xx-small">
+                <div class="slds-col slds-is-relative">
+                    <div class="slds-is-absolute bss-tooltip">
+                        <lightning-helptext content="For jobs that run Daily, you may select a desired job start time."></lightning-helptext>
+                    </div>
+                    <c-picklist
+                    label="Job Frequency"
+                    options={jobFrequencyPicklist}
+                    onselect={updateFrequencyValue}
+                    value={setupData.Loan_Sync_Job_Frequency__c}
+                    disabled={isActive}
+                    required
+                    >
+                    </c-picklist>
+                </div>
+                <div class="slds-col slds-size_3-of-7">
+                    <!-- <template if:true={onceDaily}>
+                        <c-picklist>
+                        </c-picklist>
+                    </template>
+                    <template if:false={onceDaily}>
+                        <c-picklist
+                            disabled
+                            label="Job Start Time"
+                            options={nonDailyJobStartHourOptions}
+                            value="asap">
+                        </c-picklist>
+                    </template> -->
+                    <c-picklist
+                    label="Job Start Time"
+                    options={jobStartHourPicklist}
+                    onselect={updateStartHourValue}
+                    value={setupData.Loan_Sync_Job_Start_Hour__c}
+                    disabled={isActive}
+                    required
+                    >
+                    </c-picklist>
+                </div>
+                <div class="slds-col slds-m-top_large slds-align_bottom slds-no-flex">
+                    <div class="slds-col">
+                        <template if:true={isActive}>
+                            <lightning-button
+                            label="Deactivate"
+                            onclick={openBatchModal}
+                            variant="destructive"
+                            >
+                            </lightning-button>
+                        </template>
+                        <template if:false={isActive}>
+                            <lightning-button
+                            label="Schedule Job"
+                            onclick={openBatchModal}
+                            disabled={scheduleDisabled}>
+                            </lightning-button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+            <hr class="slds-m-vertical_large"></hr>
+            <!-- Other Scheduled Jobs -->
+            <div class="slds-scoped-notification slds-media slds-scoped-notification_light slds-m-bottom_medium">
+                <div class="slds-media__body">
+                    <p class="slds-m-bottom_x-small slds-text-align_center">Below are all other scheduled Apex jobs in your Salesforce org. Avoid scheduling your Data Sync Job at the same time as the Apex jobs listed.</p>
+                </div>
+            </div>
+            <h3 class="slds-text-heading_small">
+                Other Scheduled Jobs
+            </h3>
+            <table
+                class="slds-m-top_small slds-table slds-table_bordered slds-table_col-bordered slds-no-row-hover slds-border_left slds-border_right">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" class="slds-size_1-of-2">
+                            <div class="slds-truncate" title="Job Name">Job Name</div>
+                        </th>
+                        <th scope="col" class="slds-size_1-of-2">
+                            <div class="slds-truncate" title="Next Run Time">Next Run Time</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template if:false={otherJobs}>
+                        <tr>
+                            <td colspan="2">
+                                <div class="slds-truncate slds-align_absolute-center" title="Other Job">
+                                    <em><span class="slds-text-align_center slds-text-color_weak">There are no other scheduled jobs in this Salesforce org.</span></em>
+                                </div>
+                            </td>
+
+                        </tr>
+                    </template>
+                    <template if:true={otherJobs}>
+                        <template for:each={otherJobs} for:item="otherJob">
+                            <tr key={otherJob.Id}>
+                                <td>
+                                    <div class="slds-truncate" title={otherJob.CronJobDetail.Name}>
+                                        {otherJob.CronJobDetail.Name}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="slds-truncate" title={otherJob.NextFireTime}>
+                                        {otherJob.nextFireTime}
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </template>
+                    <!-- EMPTY STATE -->
+                    <!-- <template if:false={otherJobs.length}>
+                        <tr class="pcc-empty-state">
+                            <td colspan="3" class="slds-text-color_weak slds-text-align_center">
+                                <em>No scheduled jobs</em>
+                            </td>
+                        </tr>
+                    </template> -->
+                    <!-- /EMPTY STATE -->
+                </tbody>
+            </table>
+        </div>
+    </c-step>
+    <c-modal
+        class="batchModal"
+        title={modalTitle}
+        onsecondary={cancelBatchModal}>
+        <div slot="" class="slds-text-align_center slds-is-relative slds-p-around_x-small">
+            <template if:true={loading}>
+                <lightning-spinner alternative-text="spinner"></lightning-spinner>
+            </template>
+            <template if:false={isActive}>
+                <p>Are you sure you want to activate this job?</p>
+            </template>
+            <template if:true={isActive}>
+                <p>Are you sure you want to deactivate this job? If it is not active for more than 24 hours, data can get out of sync.</p>
+            </template>
+        </div>
+        <lightning-button
+            slot="footer"
+            variant="neutral"
+            label="Cancel"
+            onclick={cancelBatchModal}>
+        </lightning-button>
+        <lightning-button
+            slot="footer"
+            variant={modalButtonVariant}
+            label={modalButtonLabel}
+            onclick={confirmBatchModal}
+            class="slds-m-left_x-small">
+        </lightning-button>
+    </c-modal>
+</template>
