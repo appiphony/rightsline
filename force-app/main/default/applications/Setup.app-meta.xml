@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
     <brand>
-        <headerColor>#0070D2</headerColor>
+        <headerColor>#7C6CD8</headerColor>
+        <logo>rightslineIcon</logo>
+        <logoVersion>1</logoVersion>
         <shouldOverrideOrgTheme>false</shouldOverrideOrgTheme>
     </brand>
-    <description>Manage your app with Strike Setup!</description>
+    <description>Install and manage your Rightsline integration.</description>
     <formFactors>Large</formFactors>
     <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
     <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
-    <label>Setup</label>
+    <label>Rightsline Setup</label>
     <navType>Standard</navType>
     <tabs>Setup</tabs>
     <uiType>Lightning</uiType>
