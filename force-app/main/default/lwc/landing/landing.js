@@ -1,10 +1,10 @@
 import { LightningElement, api, track } from 'lwc';
-import companyLogo from '@salesforce/resourceUrl/companyLogo';
 import getData from '@salesforce/apex/setupAssistant.getData';
 import getPackageVersion from '@salesforce/apex/setupAssistant.getPackageVersion';
+import rightslineLogo from '@salesforce/resourceUrl/rightslineLogo';
 
 export default class Landing extends LightningElement {
-    @track companyLogo = companyLogo;
+    @track rightslineLogo = rightslineLogo;
     @track loading = true;
     @track started = false;
     @track wizards = [];
