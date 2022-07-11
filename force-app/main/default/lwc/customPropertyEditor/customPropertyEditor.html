@@ -1,0 +1,16 @@
+<template>
+    <lightning-input
+        required
+        label="Record ID"
+        value={recordID}>
+    </lightning-input>
+    <!-- <lightning-input
+        label="Object API Name"
+        value={objectAPI}>
+    </lightning-input> -->
+    <c-picklist
+        label="Operation"
+        options={picklistOptions}
+        value={operation}>
+    </c-picklist>
+</template>
