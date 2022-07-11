@@ -1,0 +1,17 @@
+.rl-vertical_nav {
+    max-width: 180px;
+    min-width: 180px;
+}
+
+.slds-table thead th {
+    font-weight: 400;
+    font-size: 0.75rem;
+    color: #3e3e3c;
+} 
+.rl-mapping_container{
+    min-height: 25rem;
+}
+.rl-parent-lookup{
+    margin: 0rem 0rem 2rem 0rem;
+    background-color: #fafaf9;
+}

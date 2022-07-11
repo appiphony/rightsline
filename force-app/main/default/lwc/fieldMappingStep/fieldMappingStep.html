@@ -1,0 +1,81 @@
+<template>
+    <c-step title="" header="Contact Field Mapping" container-size="large" next-label="Finish">
+        <p slot="description">In order to determine how Salesforce represents Rightsline data in this org, you'll need to map fields from Rightsline contact templates to the Salesforce records of your choice. You can configure as many object and record type mappings as is necessary for your organization.</p> 
+        <!-- Selected Object Mapping -->
+                <div class="slds-border_top slds-border_bottom slds-border_left slds-border_right" style="border-radius:0.25rem;">
+                    <div class="slds-grid">
+                        <div class="rl-vertical_nav slds-col slds-border_right">
+                            <lightning-vertical-navigation class="slds-var-m-bottom_small" selected-item="group" onselect={handleSectionSelect}>
+                                <lightning-vertical-navigation-section label="Mappings">
+                                    <lightning-vertical-navigation-item label={mappingName} name="group"></lightning-vertical-navigation-item>
+                                </lightning-vertical-navigation-section>
+                            </lightning-vertical-navigation>
+                            <div class="slds-var-m-around_small">
+                                <lightning-button
+                                icon-name="utility:add"
+                                label="New Mapping"
+                                ></lightning-button>
+                            </div>
+                        </div>
+                        <div class="rl-mapping_container slds-col slds-p-horizontal_large slds-p-bottom_large slds-p-top_small">
+                            <template if:true={isGroup}>
+                                <div class="slds-grid slds-gutters slds-gutters_xx-small slds-var-m-bottom_x-small">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <c-picklist
+                                            label="Salesforce Object"
+                                            options={objectOptions}
+                                            value={objectValue}
+                                            onchange={updateObjectValue}
+                                        ></c-picklist>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2"></div>
+                                </div>
+                                <div class="slds-grid slds-gutters slds-gutters_xx-small slds-var-m-bottom_medium">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <c-picklist
+                                            label="Salesforce Record Type"
+                                            value={recordTypeValue}
+                                            options={recordTypeOptions}
+                                            onchange={updateRecordValue}
+                                        ></c-picklist>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <c-picklist
+                                            label="Rightsline Template"
+                                            options={rlOptions}
+                                            value={rlValue}
+                                            onchange={updateRlValue}
+                                        ></c-picklist>
+                                    </div>
+                                </div>
+                                <h2 class="slds-text-title_caps slds-m-bottom_small">Field Mapping</h2>
+                                <c-data-mapper
+                                    show-remove="false"
+                                    setup-data={setupData}
+                                    sf-fields={sfFields}
+                                    tp-fields={tpFields}
+                                    sf-column-name="Salesforce"
+                                    tp-column-name="Rightsline"
+                                    sf-object={selectedObject}
+                                    step="step1">
+                                </c-data-mapper> 
+                            </template>
+                            <template if:true={isClient}>
+                                <h2 class="slds-text-title_caps slds-m-bottom_small">Field Mapping</h2>
+                                <c-data-mapper
+                                    setup-data={setupData} 
+                                    sf-fields={sfFields} 
+                                    tp-fields={tpFields} 
+                                    sf-column-name="Salesforce Field"
+                                    tp-column-name="rl Client Field"
+                                    sf-object={selectedObject}
+                                    step="step1"
+                                    has-no-unique>
+                                </c-data-mapper> 
+                            </template>
+                        </div>
+                    </div>
+                </div>
+        <!-- Selected Event Mapping -->
+    </c-step>
+</template>
