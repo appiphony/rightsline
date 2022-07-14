@@ -35,6 +35,10 @@ export default class syncSchedulerStep extends LightningElement {
                 disabled: true
             },
             {
+                label: 'Run Job Now',
+                value: 'now'
+            },
+            {
                 label: '12:00 AM',
                 value: '12:00 AM'
             },
@@ -56,7 +60,7 @@ export default class syncSchedulerStep extends LightningElement {
             },
         ]
     }
-    
+
     @track otherJobs = [
         {
             Id: 1,
