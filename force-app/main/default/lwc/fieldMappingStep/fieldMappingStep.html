@@ -19,7 +19,29 @@
                         </div>
                         <div class="rl-mapping_container slds-col slds-p-horizontal_large slds-p-bottom_large slds-p-top_small">
                             <template if:true={isGroup}>
+                                <div class="slds-grid slds-border_bottom  slds-grid_vertical-align-end slds-var-m-bottom_medium">
+                                    <div class="slds-col slds-var-m-bottom_small slds-text-heading_small">Account - Customer Account</div>
+                                    <div class="slds-col slds-var-m-bottom_small slds-grow-none">
+                                        <lightning-button
+                                            variant="brand"
+                                            icon-name="utility:check"
+                                            label="Save Mapping"
+                                        ></lightning-button>
+                                    </div>
+                                </div>
+                                <h2 class="slds-text-title_caps slds-m-bottom_x-small">Object Mapping</h2>
                                 <div class="slds-grid slds-gutters slds-gutters_xx-small slds-var-m-bottom_x-small">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <c-picklist
+                                            label="Rightsline Template"
+                                            options={rlOptions}
+                                            value={rlValue}
+                                            onchange={updateRlValue}
+                                        ></c-picklist>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2"></div>
+                                </div>
+                                <div class="slds-grid slds-gutters slds-gutters_xx-small slds-var-m-bottom_large">
                                     <div class="slds-col slds-size_1-of-2">
                                         <c-picklist
                                             label="Salesforce Object"
@@ -28,23 +50,12 @@
                                             onchange={updateObjectValue}
                                         ></c-picklist>
                                     </div>
-                                    <div class="slds-col slds-size_1-of-2"></div>
-                                </div>
-                                <div class="slds-grid slds-gutters slds-gutters_xx-small slds-var-m-bottom_medium">
                                     <div class="slds-col slds-size_1-of-2">
                                         <c-picklist
                                             label="Salesforce Record Type"
                                             value={recordTypeValue}
                                             options={recordTypeOptions}
                                             onchange={updateRecordValue}
-                                        ></c-picklist>
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-2">
-                                        <c-picklist
-                                            label="Rightsline Template"
-                                            options={rlOptions}
-                                            value={rlValue}
-                                            onchange={updateRlValue}
                                         ></c-picklist>
                                     </div>
                                 </div>
