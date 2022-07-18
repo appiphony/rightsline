@@ -1,26 +1,27 @@
 <template>
     <c-landing is-classic={isClassic}></c-landing>
+    <c-toast></c-toast>
 
     <!-- Wizards and Steps -->
     <c-wizard title="System Connections" description="Authorize connections between Salesforce and Rightsline." setup show-close>
-        <c-outbound-connection-step back-hidden next-label="Finish" next-icon-name="utility:check">
+        <c-outbound-connection-step>
         </c-outbound-connection-step>
     </c-wizard>
     <c-wizard title="Contact Mapping" description="Enable data sync by mapping Salesforce data to Rightsline Contact templates." setup show-close>
-        <c-field-mapping-step next-label="Finish" next-icon-name="utility:check">
+        <c-field-mapping-step>
         </c-field-mapping-step>
     </c-wizard>
     <c-wizard title="Debug Log Management" description="Configure activity logs for use in the debugging process." setup show-close>
-        <c-debug-log-step back-hidden next-label="Finish" next-icon-name="utility:check">
+        <c-debug-log-step>
         </c-debug-log-step>
     </c-wizard>
     <c-wizard title="Schedule Data Sync Retry" description="Schedule a time for Salesforce to retry failed data sync attempts." setup show-close>
-        <c-error-retry-scheduler-step back-hidden next-label="Finish" next-icon-name="utility:check">
+        <c-error-retry-scheduler-step>
         </c-error-retry-scheduler-step>
     </c-wizard>
     <c-wizard title="Configure Contact Sync System" description="Configure the Contact Sync Lightning Component and schedule your first data sync between Salesforce and Rightsline." setup show-close>
-        <c-editor-config-step back-hidden></c-editor-config-step>
-        <c-sync-scheduler-step next-label="Finish" next-icon-name="utility:check">
+        <c-editor-config-step></c-editor-config-step>
+        <c-sync-scheduler-step>
         </c-sync-scheduler-step>
     </c-wizard>
     <!-- /Wizards and Steps -->

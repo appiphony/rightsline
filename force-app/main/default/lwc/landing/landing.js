@@ -45,7 +45,7 @@ export default class Landing extends LightningElement {
         getData()
         .then(responseDataString => {
             const responseData = JSON.parse(responseDataString);
-            const completedSteps = JSON.parse(responseData.results.setupData.Steps_Completed__c);
+            const completedSteps = JSON.parse(responseData.results.setupMetadata.Steps_Completed__c);
 
             this.showButton = !this.showStartButton;
 

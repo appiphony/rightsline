@@ -22,9 +22,11 @@ export default class Connector extends LightningElement {
     }
 
     authorize() {
-        this.isComplete = !this.isComplete;
-
-        return;
-        this.dispatchEvent(new CustomEvent('auth'))
+        debugger;
+        if(this.isComplete) {
+            this.dispatchEvent(new CustomEvent('deauth'));
+        } else {
+            this.dispatchEvent(new CustomEvent('auth'));
+        }
     }
 }

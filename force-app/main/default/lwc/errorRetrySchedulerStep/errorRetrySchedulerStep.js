@@ -1,4 +1,5 @@
 import { LightningElement, api, track, wire } from 'lwc';
+import initialCall from '@salesforce/apex/errorRetrySchedulerStep.initialCall';
 
 
 export default class errorRetrySchedulerStep extends LightningElement {
@@ -63,5 +64,20 @@ export default class errorRetrySchedulerStep extends LightningElement {
 
         this.value = value;
         this.label = label;
+    }
+
+    handleNext() {
+        debugger;
+        initialCall().then(response => {
+            const responseData = JSON.parse(response);
+            if (responseData.isSuccess) {
+                let results = responseData.results;
+            } else {
+                //
+            }
+
+        }).catch(error => {
+            const message = error.message ? error.message : error.body.message;
+        });
     }
 }

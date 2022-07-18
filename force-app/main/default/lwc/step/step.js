@@ -22,6 +22,7 @@ export default class Step extends LightningElement {
     }
 
     fireNext() {
+        debugger;
         this.dispatchEvent(new CustomEvent('next', {
             bubbles: true,
             composed: true

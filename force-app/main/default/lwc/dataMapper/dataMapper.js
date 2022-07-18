@@ -203,10 +203,12 @@ export default class DataMapper extends LightningElement {
 
         if(!this.hasNoUnique) {
             this.sfOptions.forEach(option => {
+                debugger;
                 if(option.label) option.disabled = selected.includes(option.value)
             })
 
             this.tpOptions.forEach(option => {
+                debugger;
                 if(option.label) option.disabled = selected.includes(option.value)
             })
         }

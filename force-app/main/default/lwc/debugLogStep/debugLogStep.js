@@ -1,4 +1,5 @@
 import { LightningElement, api, track } from 'lwc'
+import initialCall from '@salesforce/apex/debugLogStep.initialCall';
 
 export default class DebugLogStep extends LightningElement {
 
@@ -18,5 +19,20 @@ export default class DebugLogStep extends LightningElement {
     }
     closeConfirmationModal() {
         this.confirmationModal.hide();
+    }
+
+    handleNext() {
+        debugger;
+        initialCall().then(response => {
+            const responseData = JSON.parse(response);
+            if (responseData.isSuccess) {
+                let results = responseData.results;
+            } else {
+                //
+            }
+
+        }).catch(error => {
+            const message = error.message ? error.message : error.body.message;
+        });
     }
 }

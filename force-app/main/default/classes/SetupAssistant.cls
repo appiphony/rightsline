@@ -39,7 +39,7 @@ public with sharing class SetupAssistant {
                 }
             }
 
-            rd.put('setupData', getSetupData());
+            rd.put('setupMetadata', getSetupData());
             rd.put('setupSettings', settings);
         } catch (Exception e) {
             rd.addError(e);
@@ -80,13 +80,13 @@ public with sharing class SetupAssistant {
         return rd.getJsonString();
     }
 
-    public static Setup_Data__c getSetupData() {
+    public static Setup_Metadata__mdt getSetupData() {
         checkAccess();
 
         Set<String> fields = new Set<String>{'Id'};
 
         // Get all the custom fields.
-        for (Schema.SObjectField field : Setup_Data__c.sObjectType.getDescribe().fields.getMap().values()) {
+        for (Schema.SObjectField field : Setup_Metadata__mdt.sObjectType.getDescribe().fields.getMap().values()) {
             Schema.DescribeFieldResult fieldDescribe = field.getDescribe();
 
             if (fieldDescribe.isCustom()) {
@@ -95,23 +95,31 @@ public with sharing class SetupAssistant {
         }
 
         String query = 'SELECT ' + String.join(new List<String>(fields), ',') + 
-                       ' FROM ' + constants.NAMESPACE_API + 'Setup_Data__c' + 
-                       ' WHERE Name = \'Default\'';
+                       ' FROM ' + constants.NAMESPACE_API + 'Setup_Metadata__mdt' + 
+                       ' WHERE Label = \'Default\'';
 
-        List<Setup_Data__c> data = Database.query(query);
-        Setup_Data__c setupData = new Setup_Data__c();
+        List<Setup_Metadata__mdt> data = Database.query(query);
+        Setup_Metadata__mdt setupMetadata = new Setup_Metadata__mdt();
 
         if (!data.isEmpty()) {
-            setupData = data[0];
+            setupMetadata = data[0];
         }
 
-        setupData.Name = 'Default';
+        setupMetadata.Label = 'Default';
 
-        if (String.isEmpty(setupData.Steps_Completed__c)) {
-            setupData.Steps_Completed__c = '{}';
+        if (String.isEmpty(setupMetadata.Steps_Completed__c)) {
+            setupMetadata.Steps_Completed__c = '{}';
         }
 
-        return setupData;
+        if (String.isNotEmpty(setupMetadata.Access_Key__c)) {
+            setupMetadata.Access_Key__c = constants.BLUR_STRING;
+            setupMetadata.Secret_Key__c = constants.BLUR_STRING;
+            setupMetadata.Session_Token__c = constants.BLUR_STRING;
+            setupMetadata.Temp_Access_Key__c = constants.BLUR_STRING;
+            setupMetadata.Temp_Secret_Key__c = constants.BLUR_STRING;
+        }
+
+        return setupMetadata;
     }
 
     public static void saveSetupData(Setup_Data__c setupData) {

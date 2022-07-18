@@ -1,0 +1,24 @@
+.strike-toast_container {
+    pointer-events: none;
+}
+
+.strike-toast_container > * {
+    pointer-events: auto;
+}
+
+.strike-toast {
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    opacity: 0;
+    transform: rotateX(90deg);
+    transition: all ease-in-out .2s;
+    transform-origin: 50% 5%;
+}
+
+.strike-toast.strike-toast_shown {
+    -webkit-transform: rotateX(0deg);
+    -ms-transform: rotateX(0deg);
+    transform: rotateX(0deg);
+    opacity: 1;
+}

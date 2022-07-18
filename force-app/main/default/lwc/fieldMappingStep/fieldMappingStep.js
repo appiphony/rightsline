@@ -2,6 +2,7 @@ import { LightningElement, api, wire, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import saveData from '@salesforce/apex/setupAssistant.saveData';
 import getData from '@salesforce/apex/setupAssistant.getData';
+import initialCall from '@salesforce/apex/fieldMappingStep.initialCall';
 
 export default class FieldMappingStep extends LightningElement {
 
@@ -240,7 +241,7 @@ export default class FieldMappingStep extends LightningElement {
             getData().then(response => {
                 let responseData = JSON.parse(response)
                 if(responseData.isSuccess) {
-                    this.setupData = responseData.results.setupData
+                    this.setupData = responseData.results.setupMetadata
                     this.loading = false
                     resolve()
                 } else {
@@ -251,6 +252,7 @@ export default class FieldMappingStep extends LightningElement {
     }
 
     next(event) {
+        debugger;
         event.stopPropagation();
         this.template.querySelector('c-data-mapper').validate().then(() => {
             saveData({
@@ -273,5 +275,20 @@ export default class FieldMappingStep extends LightningElement {
         }).catch(error => {
             console.log(error)
         })
+    }
+
+    handleNext() {
+        debugger;
+        initialCall().then(response => {
+            const responseData = JSON.parse(response);
+            if (responseData.isSuccess) {
+                let results = responseData.results;
+            } else {
+                //
+            }
+
+        }).catch(error => {
+            const message = error.message ? error.message : error.body.message;
+        });
     }
 }

@@ -1,5 +1,5 @@
 <template>
-    <c-step title="" header="Contact Field Mapping" container-size="large" next-label="Finish">
+    <c-step title="" header="Contact Field Mapping" container-size="large" next-label="Finish" onnext={handleNext}>
         <p slot="description">In order to determine how Salesforce represents Rightsline data in this org, you'll need to map fields from Rightsline contact templates to the Salesforce records of your choice. You can configure as many object and record type mappings as is necessary for your organization.</p> 
         <!-- Selected Object Mapping -->
                 <div class="slds-border_top slds-border_bottom slds-border_left slds-border_right" style="border-radius:0.25rem;">
@@ -50,7 +50,6 @@
                                 </div>
                                 <h2 class="slds-text-title_caps slds-m-bottom_small">Field Mapping</h2>
                                 <c-data-mapper
-                                    show-remove="false"
                                     setup-data={setupData}
                                     sf-fields={sfFields}
                                     tp-fields={tpFields}

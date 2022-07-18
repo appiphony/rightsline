@@ -76,10 +76,8 @@
     </c-step>
     <!-- MODAL -->
     <c-modal
-        is-loading={isLoading}
         title="Delete Log Records?"
         class="debug-confirmation-modal"
-        confirm-label="Confirm"
         oncancel={closeConfirmationModal}>
         <div class="slds-text-align_center">
             <p class="slds-var-m-bottom_x-small">This will queue all existing log records in this Salesforce org for deletion.</p>

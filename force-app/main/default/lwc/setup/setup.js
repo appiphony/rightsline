@@ -12,6 +12,8 @@ export default class Setup extends LightningElement {
         super();
         this.template.addEventListener('exit', this.showLanding.bind(this));
         this.template.addEventListener('finish', this.showLanding.bind(this));
+        this.template.addEventListener('showtoast', this.showToast.bind(this));
+        this.template.addEventListener('hidetoast', this.hideToast.bind(this));
     }
 
     renderedCallback() {
@@ -23,5 +25,14 @@ export default class Setup extends LightningElement {
 
     showLanding() {
         this.template.querySelector('c-landing').show(this.wizards);
+    }
+
+    showToast(event){
+        let toastParams = event.detail;
+        this.template.querySelector('c-toast').show(toastParams.message, toastParams.variant, toastParams.mode);
+    }
+
+    hideToast(event){
+        this.template.querySelector('c-toast').hide();
     }
 }

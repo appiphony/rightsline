@@ -1,4 +1,5 @@
 import { LightningElement, api, track, wire } from 'lwc';
+import initialCall from '@salesforce/apex/syncSchedulerStep.initialCall';
 
 
 export default class syncSchedulerStep extends LightningElement {
@@ -71,5 +72,20 @@ export default class syncSchedulerStep extends LightningElement {
 
         this.value = value;
         this.label = label;
+    }
+
+    handleNext() {
+        debugger;
+        initialCall().then(response => {
+            const responseData = JSON.parse(response);
+            if (responseData.isSuccess) {
+                let results = responseData.results;
+            } else {
+                //
+            }
+
+        }).catch(error => {
+            const message = error.message ? error.message : error.body.message;
+        });
     }
 }
