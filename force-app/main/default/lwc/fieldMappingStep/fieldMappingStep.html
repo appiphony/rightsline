@@ -17,19 +17,27 @@
                                 ></lightning-button>
                             </div>
                         </div>
-                        <div class="rl-mapping_container slds-col slds-p-horizontal_large slds-p-bottom_large slds-p-top_small">
+                        <div class="rl-mapping_container slds-col slds-var-p-horizontal_large slds-var-p-bottom_large slds-p-top_small">
                             <template if:true={isGroup}>
-                                <div class="slds-grid slds-border_bottom  slds-grid_vertical-align-end slds-var-m-bottom_medium">
+                                <div class="slds-grid slds-border_bottom  slds-grid_vertical-align-end slds-var-m-bottom_large">
                                     <div class="slds-col slds-var-m-bottom_small slds-text-heading_small">Account - Customer Account</div>
                                     <div class="slds-col slds-var-m-bottom_small slds-grow-none">
                                         <lightning-button
-                                            variant="brand"
+                                            class="slds-button"
+                                            variant="destructive-text"
+                                            icon-name="utility:delete"
+                                            onclick={openDeleteModal}
+                                            label="Delete Mapping"
+                                        ></lightning-button>
+                                        <lightning-button
+                                            class="slds-button"
                                             icon-name="utility:check"
                                             label="Save Mapping"
+                                            onclick={saveMapping}
                                         ></lightning-button>
                                     </div>
                                 </div>
-                                <h2 class="slds-text-title_caps slds-m-bottom_x-small">Object Mapping</h2>
+                                <h2 class="slds-text-title_caps slds-var-m-bottom_x-small">Object Mapping</h2>
                                 <div class="slds-grid slds-gutters slds-gutters_xx-small slds-var-m-bottom_x-small">
                                     <div class="slds-col slds-size_1-of-2">
                                         <c-picklist
@@ -59,7 +67,7 @@
                                         ></c-picklist>
                                     </div>
                                 </div>
-                                <h2 class="slds-text-title_caps slds-m-bottom_small">Field Mapping</h2>
+                                <h2 class="slds-text-title_caps slds-var-m-bottom_small">Field Mapping</h2>
                                 <c-data-mapper
                                     show-remove="false"
                                     setup-data={setupData}
@@ -84,9 +92,48 @@
                                     has-no-unique>
                                 </c-data-mapper> 
                             </template>
+                            <div class="slds-grid slds-var-p-top_small slds-var-m-top_medium slds-border_top">
+                                <div class="slds-col"></div>
+                                <div class="slds-col slds-grow-none">
+                                    <lightning-button
+                                        class="slds-button"
+                                        variant="destructive-text"
+                                        icon-name="utility:delete"
+                                        onclick={openDeleteModal}
+                                        label="Delete Mapping"
+                                    ></lightning-button>
+                                    <lightning-button
+                                        class="slds-button"
+                                        icon-name="utility:check"
+                                        onclick={saveMapping}
+                                        label="Save Mapping"
+                                    ></lightning-button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
         <!-- Selected Event Mapping -->
     </c-step>
+    <c-modal
+        class="delete-modal"
+        title="Delete Mapping"
+        onsecondary={closeDeleteModal}>
+        <div class="slds-text-align_center slds-is-relative">
+            <p>Are you sure you want to delete the <strong>{objectLabelForDelete}</strong> mapping? This action can not be undone.</p>
+        </div>
+        <lightning-button
+            slot="footer"
+            variant="neutral"
+            label="Cancel"
+            onclick={closeDeleteModal}>
+        </lightning-button>
+        <lightning-button
+            slot="footer"
+            variant="destructive"
+            label="Delete"
+            onclick={deleteMapping}
+            class="slds-var-m-left_x-small">
+        </lightning-button>
+    </c-modal>
 </template>
