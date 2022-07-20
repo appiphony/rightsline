@@ -56,7 +56,7 @@ public with sharing class SetupAssistant {
             checkAccess();
 
             if (setupData != null) {
-                Setup_Data__c dataObj = (Setup_Data__c)utilities.getSobjectByMap(setupData, constants.NAMESPACE_API + 'Setup_Data__c');
+                Setup_Data__c dataObj = (Setup_Data__c)Utilities.getSobjectByMap(setupData, constants.NAMESPACE_API + 'Setup_Data__c');
                 saveSetupData(dataObj);
             }
 
@@ -66,7 +66,7 @@ public with sharing class SetupAssistant {
                         setupSettings.remove(field);
                     }
                 }
-                Setup_Settings__c settingsObj = (Setup_Settings__c)utilities.getSobjectByMap(setupSettings, constants.NAMESPACE_API + 'Setup_Settings__c');
+                Setup_Settings__c settingsObj = (Setup_Settings__c)Utilities.getSobjectByMap(setupSettings, constants.NAMESPACE_API + 'Setup_Settings__c');
                 settingsObj.Id = Setup_Settings__c.getOrgDefaults().Id;
 
                 upsert settingsObj;

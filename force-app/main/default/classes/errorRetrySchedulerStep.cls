@@ -18,7 +18,7 @@ public with sharing class errorRetrySchedulerStep {
                 setupMetadata.Steps_Completed__c = JSON.serialize(stepsCompleted);
             }
 
-            utilities.Upsert_MDT_Value('Setup_Metadata__mdt.' + setupMetadata.Label,
+            Utilities.Upsert_MDT_Value('Setup_Metadata__mdt.' + setupMetadata.Label,
                 setupMetadata.Label,
                 new LIST<string>{'Steps_Completed__c'},
                 new LIST<object>{setupMetadata.Steps_Completed__c}

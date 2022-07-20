@@ -9,7 +9,7 @@ public with sharing class outboundConnectionStep {
             String accessKey = (String)credsMap.get('accessKey');
             String secretKey = (String)credsMap.get('secretKey');
 
-            HttpResponse response = utilities.tempCredsCallout(apiKey, accessKey, secretKey);
+            HttpResponse response = Utilities.tempCredsCallout(apiKey, accessKey, secretKey);
 
             if (response.getStatusCode() == 200) {
                 Map<String, Object> responseBody = (Map<String, Object>)JSON.deserializeUntyped(response.getBody());
@@ -33,7 +33,7 @@ public with sharing class outboundConnectionStep {
                     setupMetadata.Steps_Completed__c = JSON.serialize(stepsCompleted);
                 }
 
-                utilities.Upsert_MDT_Value('Setup_Metadata__mdt.' + setupMetadata.Label, setupMetadata.Label,
+                Utilities.Upsert_MDT_Value('Setup_Metadata__mdt.' + setupMetadata.Label, setupMetadata.Label,
                                             new LIST<string>{'Steps_Completed__c', 
                                                             'Api_Key__c', 
                                                             'Access_Key__c', 
@@ -64,7 +64,7 @@ public with sharing class outboundConnectionStep {
         try {
             Setup_Metadata__mdt setupMetadata = [SELECT Id, Label FROM Setup_Metadata__mdt WHERE Label = 'Default' LIMIT 1];
 
-            utilities.Upsert_MDT_Value('Setup_Metadata__mdt.' + setupMetadata.Label,
+            Utilities.Upsert_MDT_Value('Setup_Metadata__mdt.' + setupMetadata.Label,
                 setupMetadata.Label,
                 new LIST<string>{'Api_Key__c', 'Access_Key__c', 'Secret_Key__c', 'Session_Token__c', 'Temp_Access_Key__c', 'Temp_Secret_Key__c'},
                 new LIST<object>{'', '', '', '', '', ''}

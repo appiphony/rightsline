@@ -18,7 +18,7 @@ public with sharing class fieldMappingStep {
                 setupMetadata.Steps_Completed__c = JSON.serialize(stepsCompleted);
             }
 
-            utilities.Upsert_MDT_Value('Setup_Metadata__mdt.' + setupMetadata.Label,
+            Utilities.Upsert_MDT_Value('Setup_Metadata__mdt.' + setupMetadata.Label,
                 setupMetadata.Label,
                 new LIST<string>{'Steps_Completed__c'},
                 new LIST<object>{setupMetadata.Steps_Completed__c}
@@ -33,7 +33,7 @@ public with sharing class fieldMappingStep {
     public static String getRightslineTemplates(){
         ResponseData rd = new ResponseData();
         try {
-            HttpResponse response = utilities.makeRightslineCallout('v4/contact-templates', 'GET', null);
+            HttpResponse response = Utilities.makeRightslineCallout('v4/contact-templates', 'GET', null);
             if (response.getStatusCode() == 200) {
                 Map<String, Object> responseBody = (Map<String, Object>)JSON.deserializeUntyped(response.getBody());
                 List<Object> responseList = (List<Object>)responseBody.get('templates');
