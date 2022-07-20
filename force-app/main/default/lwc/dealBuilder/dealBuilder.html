@@ -1,0 +1,61 @@
+<template>
+    <div class="slds-card slds-card_boundary slds-is-relative">
+        <lightning-spinner if:true={loading} size="small" alternative-text="Loading"></lightning-spinner>
+        <template if:true={normalState}>
+            <div class="slds-page-header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__figure">
+                        <img class="slds-icon slds-icon_small" alt="RightslineLogo">
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title">
+                            <strong> Rightsline </strong>								
+                        </h2>
+                    </div>
+                    <lightning-button label="Add Available Catalogs" onclick={launchAvailsCheck}></lightning-button>                    
+                </header>
+            </div>
+        </template>
+        <template if:false={normalState}>
+            <div class="slds-box slds-scoped-notification slds-theme_offline slds-theme_alert-texture" role="status">
+                <div class="slds-grid slds-gutters_direct-x-small slds-align_absolute-center">
+                    <div class="slds-col slds-no-flex">
+                        <lightning-icon icon-name="utility:info" variant="inverse" size="small"></lightning-icon>
+                    </div>
+                    <div class="slds-col slds-grow-none">
+                        <p>{message}</p>							
+                    </div>
+                </div>
+            </div>
+        </template>			
+    </div>
+
+
+    <div class="slds-notify_container">
+        <div class={toast.class} role="alert">
+            <template if:true={toast.icon}>
+                <template if:true={toast.icon.name}>
+                    <span class="slds-assistive-text">{toast.type}</span>
+                    <span class={toast.icon.class} title={toast.type}>
+                        <lightning-icon icon-name={toast.icon.name} size="small" variant="inverse"></lightning-icon>
+                    </span>
+                </template>
+            </template>
+            <div class="slds-notify__content">
+                <h2 class="slds-text-heading_small ">
+                    {toast.title}
+                </h2>
+                <p if:true={toast.message}>{toast.message}</p>
+            </div>
+            <button if:true={toast.dismissible} class="slds-button slds-button_icon slds-notify__close slds-button_icon-inverse" title="Close" onclick={hideToast}>
+                <lightning-button-icon icon-name="utility:close" alternative-text="add" size="large" variant="bare-inverse"></lightning-button-icon>
+                <span class="slds-assistive-text">Close</span>
+            </button>
+        </div>
+    </div>
+
+    <c-modal data-type="addRightsSetCatalogItems" title="Add Available Catalogs" showclose="true">
+        <!-- Add availscheck wizard here -->   
+        <c-avails-check-wizard if:true={showWizard} onclosemodal={handleCloseModal}></c-avails-check-wizard>     
+    </c-modal>
+</template>

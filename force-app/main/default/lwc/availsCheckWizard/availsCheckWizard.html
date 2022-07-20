@@ -1,0 +1,29 @@
+<template>
+    <lightning-spinner if:true={loading} size="small" alternative-text="Loading"></lightning-spinner>
+    <template if:false={loading}>
+
+        
+        <c-picklist label="Media" options={mediaOptions} value={selectedMediaOption} searchable="true" onselect={updateMediaSelection}></c-picklist>
+        
+        <c-picklist label="Language" options={languageOptions} value={selectedLanguageOption} searchable="true" onselect={updateLanguageSelection}></c-picklist>
+
+        <c-picklist label="Territory" options={territoryOptions} value={selectedTerritoryOption} searchable="true" onselect={updateTerritorySelection}></c-picklist>
+
+
+        <lightning-button
+            slot="footer"
+            label="Cancel"
+            title="Cancel"
+            onclick={handleCancelClicked}>
+        </lightning-button>
+        <lightning-button
+            slot="footer"
+            variant="brand"
+            label="Search"
+            title="Search"
+            onclick={handleSearchClicked}
+            class="slds-m-left_x-small">
+        </lightning-button>
+
+    </template>    
+</template>

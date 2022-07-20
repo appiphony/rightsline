@@ -51,15 +51,21 @@ public class DimensionDataApiResponse {
         }
     }
     
-    public List<Dimension> dimension {get;set;} 
+    public List<Dimension> media {get;set;} 
+    public List<Dimension> territory {get;set;} 
+    public List<Dimension> language {get;set;} 
 
     public DimensionDataApiResponse(JSONParser parser) {
         while (parser.nextToken() != System.JSONToken.END_OBJECT) {
             if (parser.getCurrentToken() == System.JSONToken.FIELD_NAME) {
                 String text = parser.getText();
                 if (parser.nextToken() != System.JSONToken.VALUE_NULL) {
-                    if (text == 'dim1' || text == 'dim2' || text == 'dim3') {
-                        dimension = arrayOfDimension(parser);
+                    if (text == 'dim1'){
+                        media = arrayOfDimension(parser);
+                    } else if(text == 'dim2'){
+                        territory = arrayOfDimension(parser);
+                    } else if(text == 'dim3') {
+                        language = arrayOfDimension(parser);
                     } else {
                         System.debug(LoggingLevel.WARN, 'DimensionDataApiResponse consuming unrecognized property: '+text); //TODO - get rid of this later
                         consumeObject(parser);
