@@ -28,4 +28,32 @@ public with sharing class fieldMappingStep {
         }
         return rd.getJsonString();
     }
+
+    @AuraEnabled
+    public static String getRightslineTemplates(){
+        ResponseData rd = new ResponseData();
+        try {
+            HttpResponse response = utilities.makeRightslineCallout('v4/contact-templates', 'GET', null);
+            if (response.getStatusCode() == 200) {
+                Map<String, Object> responseBody = (Map<String, Object>)JSON.deserializeUntyped(response.getBody());
+                List<Object> responseList = (List<Object>)responseBody.get('templates');
+                List<Object> templateList = new List<Object>();
+
+                for (Object templateObject: responseList) {
+                    Map<String, Object> templateMap = (Map<String, Object>)templateObject;
+                    templateMap.remove('processId');
+                    templateMap.remove('processName');
+                    templateList.add(templateMap);
+                }
+
+                rd.put('templateList', templateList);
+            } else {
+                Map<String, Object> error = (Map<String, Object>)JSON.deserializeUntyped(response.getBody());
+                rd.addError((String)error.get('message'));
+            }
+        } catch (Exception e) {
+            rd.addError(e);
+        }
+        return rd.getJsonString();
+    }
 }

@@ -13,5 +13,6 @@
     <label>Rightsline Setup</label>
     <navType>Standard</navType>
     <tabs>Setup</tabs>
+    <tabs>Package_Log__c</tabs>
     <uiType>Lightning</uiType>
 </CustomApplication>

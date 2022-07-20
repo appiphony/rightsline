@@ -9,13 +9,10 @@ export default class outboundConnectionStep extends LightningElement {
     setupMetadata = {};
 
     connectedCallback() {
-        debugger;
         getData().then(res => {
-            debugger;
             let parsedRes = JSON.parse(res);
 
             if (parsedRes.isSuccess) {
-                debugger;
                 this.setupMetadata = parsedRes.results.setupMetadata;
                 this.isComplete = this.setupMetadata.Access_Key__c == '********';
             } else {
@@ -29,7 +26,6 @@ export default class outboundConnectionStep extends LightningElement {
     }
 
     authorize() {
-        debugger;
         let apiKey = this.template.querySelector('.js-apiKey').value;
         let accessKey = this.template.querySelector('.js-accessKey').value;
         let secretKey = this.template.querySelector('.js-secretKey').value;
@@ -57,10 +53,10 @@ export default class outboundConnectionStep extends LightningElement {
             jsonString : JSON.stringify(creds)
         }).then(res => {
             let parsedRes = JSON.parse(res);
-            debugger;
             if (parsedRes.isSuccess) {
                 this.isComplete = true;
-                //success toast
+                this.setupMetadata.Access_Key__c = '********';
+                this.setupMetadata.Secret_Key__c = '********';
             } else {
                 this.dispatchEvent(new CustomEvent('showtoast', {
                     detail: {
@@ -71,20 +67,17 @@ export default class outboundConnectionStep extends LightningElement {
                     composed: true
                 }));
                 this.isComplete = false;
-                //error toast
             }
         })
     }
 
     deauthorize() {
-        debugger;
 
         clearCreds().then(res => {
             let parsedRes = JSON.parse(res);
-            debugger;
             if (parsedRes.isSuccess) {
                 this.isComplete = false;
-                //success toast
+                this.setupMetadata = {};
             } else {
                 this.dispatchEvent(new CustomEvent('showtoast', {
                     detail: {
@@ -95,7 +88,6 @@ export default class outboundConnectionStep extends LightningElement {
                     composed: true
                 }));
                 this.isComplete = true;
-                //error toast
             }
         })
     }

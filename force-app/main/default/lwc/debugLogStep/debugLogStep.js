@@ -23,16 +23,30 @@ export default class DebugLogStep extends LightningElement {
 
     handleNext() {
         debugger;
-        initialCall().then(response => {
-            const responseData = JSON.parse(response);
-            if (responseData.isSuccess) {
-                let results = responseData.results;
+        initialCall().then(res => {
+            let parsedRes = JSON.parse(res);
+            if (parsedRes.isSuccess) {
+                //let results = responseData.results;
             } else {
-                //
+                this.dispatchEvent(new CustomEvent('showtoast', {
+                    detail: {
+                        message : parsedRes.error,
+                        variant : 'error'
+                    },
+                    bubbles: true,
+                    composed: true
+                }));
             }
-
         }).catch(error => {
-            const message = error.message ? error.message : error.body.message;
+            let message = error.message ? error.message : error.body.message;
+            this.dispatchEvent(new CustomEvent('showtoast', {
+                detail: {
+                    message : message,
+                    variant : 'error'
+                },
+                bubbles: true,
+                composed: true
+            }));
         });
     }
 }

@@ -33,7 +33,6 @@ AppSwitcher.appMenu
 
 # Communities
 force-app/main/default/profilePasswordPolicies
-force-app/main/default/remoteSiteSettings
 force-app/main/default/appMenus
 force-app/main/default/classes/SiteLoginController.cls
 force-app/main/default/classes/SiteLoginControllerTest.cls

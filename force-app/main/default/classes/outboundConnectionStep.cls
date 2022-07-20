@@ -9,22 +9,10 @@ public with sharing class outboundConnectionStep {
             String accessKey = (String)credsMap.get('accessKey');
             String secretKey = (String)credsMap.get('secretKey');
 
-            HttpRequest request = new HttpRequest();
-            request.setEndpoint('https://ris.rightsline.com/v4/auth/temporary-credentials');
-            request.setMethod('POST');
-            request.setTimeout(60000);
-            request.setHeader('Content-Type', 'application/json');
-            request.setHeader('x-api-key', apiKey);
-            Map<String, String> body = new Map<String, String>();
-            body.put('accessKey', accessKey);
-            body.put('secretKey', secretKey);
-            request.setBody(JSON.serialize(body));
-
-            HttpResponse response = new Http().send(request);
-            Map<String, Object> responseBody = (Map<String, Object>)JSON.deserializeUntyped(response.getBody());
+            HttpResponse response = utilities.tempCredsCallout(apiKey, accessKey, secretKey);
 
             if (response.getStatusCode() == 200) {
-                rd.put('body', JSON.serialize(responseBody));
+                Map<String, Object> responseBody = (Map<String, Object>)JSON.deserializeUntyped(response.getBody());
                 String sessionToken = (String)responseBody.get('sessionToken');
                 String tempAccessKey = (String)responseBody.get('accessKey');
                 String tempSecretKey = (String)responseBody.get('secretKey');
@@ -45,11 +33,22 @@ public with sharing class outboundConnectionStep {
                     setupMetadata.Steps_Completed__c = JSON.serialize(stepsCompleted);
                 }
 
-                utilities.Upsert_MDT_Value('Setup_Metadata__mdt.' + setupMetadata.Label,
-                    setupMetadata.Label,
-                    new LIST<string>{'Steps_Completed__c', 'Api_Key__c', 'Access_Key__c', 'Secret_Key__c', 'Session_Token__c', 'Temp_Access_Key__c', 'Temp_Secret_Key__c'},
-                    new LIST<object>{setupMetadata.Steps_Completed__c, apiKey, accessKey, secretKey, sessionToken, tempAccessKey, tempSecretKey}
-                    );
+                utilities.Upsert_MDT_Value('Setup_Metadata__mdt.' + setupMetadata.Label, setupMetadata.Label,
+                                            new LIST<string>{'Steps_Completed__c', 
+                                                            'Api_Key__c', 
+                                                            'Access_Key__c', 
+                                                            'Secret_Key__c', 
+                                                            'Session_Token__c', 
+                                                            'Temp_Access_Key__c', 
+                                                            'Temp_Secret_Key__c'},
+                                            new LIST<object>{setupMetadata.Steps_Completed__c, 
+                                                            apiKey, 
+                                                            accessKey, 
+                                                            secretKey, 
+                                                            sessionToken, 
+                                                            tempAccessKey, 
+                                                            tempSecretKey}
+                                            );
             } else {
                 rd.addError('Invalid Credentials');
             }

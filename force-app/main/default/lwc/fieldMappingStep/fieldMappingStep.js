@@ -3,9 +3,11 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import saveData from '@salesforce/apex/setupAssistant.saveData';
 import getData from '@salesforce/apex/setupAssistant.getData';
 import initialCall from '@salesforce/apex/fieldMappingStep.initialCall';
+import getRightslineTemplates from '@salesforce/apex/fieldMappingStep.getRightslineTemplates';
 
 export default class FieldMappingStep extends LightningElement {
 
+    @track templateList = {};
     @track activeSection = 'group'; //Selected Vertical Nav Tab. Defaults to first available section
 
     get isGroup() {
@@ -15,7 +17,7 @@ export default class FieldMappingStep extends LightningElement {
         return this.activeSection === "client";
     }
 
-    @track mappingName = 'Account - Customer Account'
+    @track mappingName = 'Account - Customer Account';
 
 
     get objectOptions() {
@@ -27,21 +29,22 @@ export default class FieldMappingStep extends LightningElement {
             {
                 label: 'Contact',
                 value: 'contact',
-            },
-        ]
+            }
+        ];
     }
 
-    @track objectValue = 'account'
-    @track objectLabel = 'Account'
+    @track objectValue = 'account';
+    @track objectLabel = 'Account';
 
 
 
     updateObjectValue(event){
-        this.value = event.detail.value;
-        this.value = objectValue;
+        debugger;
+        let value = event.detail.value;
+        this.objectValue = value;
     }
 
-    @track recordTypeValue = 'customerAccount'
+    @track recordTypeValue = 'customerAccount';
     get recordTypeOptions() {
         return [
             {
@@ -51,13 +54,20 @@ export default class FieldMappingStep extends LightningElement {
             {
                 label: 'Sales Account',
                 value: 'salesAccount',
-            },
-        ]
+            }
+        ];
     }
 
-    @track rlValue = 'customer'
+    updateRecordValue(event) {
+        debugger;
+        let value = event.detail.value;
+        this.recordTypeValue = value;
+    }
+
+    @track rlValue = 'customer';
 
     get rlOptions() {
+        //return this.templateList;
         return [
             {
                 label: 'Customer',
@@ -66,8 +76,8 @@ export default class FieldMappingStep extends LightningElement {
             {
                 label: 'Sales',
                 value: 'sales',
-            },
-        ]
+            }
+        ];
     }
     
     handleSectionSelect(event) {
@@ -75,14 +85,15 @@ export default class FieldMappingStep extends LightningElement {
         this.activeMapping = this[this.activeSection + 'Mapping'];
     }
 
-    updateValue(event){
+    updateRlValue(event){
+        debugger;
         let value = event.detail.value;
-        this.value = value;
+        this.rlValue = value;
     } 
 
 
-    @track selectedObject = 'Account'
-    @track setupData
+    @track selectedObject = 'Account';
+    @track setupData;
     @track defaultMapping = {
         rows: [
             {
@@ -124,9 +135,9 @@ export default class FieldMappingStep extends LightningElement {
             {
                 tpField: 'phoneOther',
                 sfField: 'sfield1'
-            },
+            }
         ]
-    }
+    };
 
     @track tpFields = [
         {
@@ -200,7 +211,7 @@ export default class FieldMappingStep extends LightningElement {
             column: 'tp',
             fieldType: 'string'
         },
-    ]
+    ];
 
     @track sfFields = [
         {
@@ -228,12 +239,32 @@ export default class FieldMappingStep extends LightningElement {
             column: 'sf',
             fieldType: 'boolean'
         }
-    ]
+    ];
 
     // constructor() {
     //     super()
     //     this.template.addEventListener('next', this.next.bind(this))
     // }
+
+    connectedCallback () {
+        getRightslineTemplates().then(res => {
+            let parsedRes = JSON.parse(res);
+            debugger;
+            if (parsedRes.isSuccess) {
+                debugger;
+                this.templateList = parsedRes.results.templateList;
+            } else {
+                this.dispatchEvent(new CustomEvent('showtoast', {
+                    detail: {
+                        message : parsedRes.error,
+                        variant : 'error'
+                    },
+                    bubbles: true,
+                    composed: true
+                }));
+            }
+        })
+    }
 
     @api
     show() {
@@ -279,16 +310,30 @@ export default class FieldMappingStep extends LightningElement {
 
     handleNext() {
         debugger;
-        initialCall().then(response => {
-            const responseData = JSON.parse(response);
-            if (responseData.isSuccess) {
-                let results = responseData.results;
+        initialCall().then(res => {
+            let parsedRes = JSON.parse(res);
+            if (parsedRes.isSuccess) {
+                //let results = responseData.results;
             } else {
-                //
+                this.dispatchEvent(new CustomEvent('showtoast', {
+                    detail: {
+                        message : parsedRes.error,
+                        variant : 'error'
+                    },
+                    bubbles: true,
+                    composed: true
+                }));
             }
-
         }).catch(error => {
-            const message = error.message ? error.message : error.body.message;
+            let message = error.message ? error.message : error.body.message;
+            this.dispatchEvent(new CustomEvent('showtoast', {
+                detail: {
+                    message : message,
+                    variant : 'error'
+                },
+                bubbles: true,
+                composed: true
+            }));
         });
     }
 }

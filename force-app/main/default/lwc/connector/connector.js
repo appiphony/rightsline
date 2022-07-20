@@ -22,7 +22,6 @@ export default class Connector extends LightningElement {
     }
 
     authorize() {
-        debugger;
         if(this.isComplete) {
             this.dispatchEvent(new CustomEvent('deauth'));
         } else {

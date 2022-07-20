@@ -1,5 +1,5 @@
 <template>
-    <c-step title="" header="Contact Field Mapping" container-size="large" next-label="Finish" onnext={handleNext}>
+    <c-step title="" header="Contact Field Mapping" container-size="large" next-label="Finish" onnext={handleNext} back-hidden>
         <p slot="description">In order to determine how Salesforce represents Rightsline data in this org, you'll need to map fields from Rightsline contact templates to the Salesforce records of your choice. You can configure as many object and record type mappings as is necessary for your organization.</p> 
         <!-- Selected Object Mapping -->
                 <div class="slds-border_top slds-border_bottom slds-border_left slds-border_right" style="border-radius:0.25rem;">
@@ -36,7 +36,8 @@
                                             label="Rightsline Template"
                                             options={rlOptions}
                                             value={rlValue}
-                                            onchange={updateRlValue}
+                                            onselect={updateRlValue}
+                                            placeholder="-- Select a field --"
                                         ></c-picklist>
                                     </div>
                                     <div class="slds-col slds-size_1-of-2"></div>
@@ -47,7 +48,8 @@
                                             label="Salesforce Object"
                                             options={objectOptions}
                                             value={objectValue}
-                                            onchange={updateObjectValue}
+                                            onselect={updateObjectValue}
+                                            placeholder="-- Select a field --"
                                         ></c-picklist>
                                     </div>
                                     <div class="slds-col slds-size_1-of-2">
@@ -55,7 +57,8 @@
                                             label="Salesforce Record Type"
                                             value={recordTypeValue}
                                             options={recordTypeOptions}
-                                            onchange={updateRecordValue}
+                                            onselect={updateRecordValue}
+                                            placeholder="-- Select a field --"
                                         ></c-picklist>
                                     </div>
                                 </div>
