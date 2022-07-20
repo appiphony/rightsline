@@ -10,6 +10,16 @@ export default class FieldMappingStep extends LightningElement {
     @track templateList = {};
     @track activeSection = 'group'; //Selected Vertical Nav Tab. Defaults to first available section
 
+    // Delete modal
+    
+    openDeleteModal() {
+        this.template.querySelector('.delete-modal').show();
+    }
+
+    closeDeleteModal() {
+        this.template.querySelector('.delete-modal').hide();
+    }
+
     get isGroup() {
         return this.activeSection === "group";
     }
@@ -35,8 +45,6 @@ export default class FieldMappingStep extends LightningElement {
 
     @track objectValue = 'account';
     @track objectLabel = 'Account';
-
-
 
     updateObjectValue(event){
         debugger;
