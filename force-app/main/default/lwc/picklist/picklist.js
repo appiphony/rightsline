@@ -476,7 +476,7 @@ export default class Picklist extends LightningElement {
 
     get inputClassList() {
         return (
-            "sp-picklist__input slds-col slds-p-horizontal_xx-small" +
+            "sp-picklist__input slds-col slds-var-p-horizontal_xx-small" +
             (this.searchable ? "" : " slds-hide")
         );
     }

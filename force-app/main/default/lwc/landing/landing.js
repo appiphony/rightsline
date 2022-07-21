@@ -25,7 +25,7 @@ export default class Landing extends LightningElement {
     }
 
     get landingClassList() {
-        return 'strike-setup-assistant_container slds-container_center slds-p-around_x-large' + (this.isClassic ? ' classicLandingSpinner' : '');
+        return 'strike-setup-assistant_container slds-container_center slds-var-p-around_x-large' + (this.isClassic ? ' classicLandingSpinner' : '');
     }
 
     connectedCallback() {

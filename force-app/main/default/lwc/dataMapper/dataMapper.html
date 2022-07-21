@@ -4,11 +4,11 @@
         <thead class={header}>
             <tr class="slds-text-title_caps">
                 <th style={headerStyle}>
-                    <h4 class="slds-show_inline-block slds-m-left_small">{tpColumnName}</h4>
+                    <h4 class="slds-show_inline-block slds-var-m-left_small">{tpColumnName}</h4>
                 </th>
 
                 <th style={headerStyle}>
-                    <h4 class="slds-show_inline-block slds-m-left_small">{sfColumnName}</h4>
+                    <h4 class="slds-show_inline-block slds-var-m-left_small">{sfColumnName}</h4>
                 </th>
                 <template if:true={showRemove}>
                     <th class="slds-text-align_center" style="width: 1px;">
@@ -127,7 +127,7 @@
     </table>
     <!-- Add Mapping Button -->
     <template if:true={addButton}>
-        <div class="slds-p-top_small slds-grid slds-gutters">
+        <div class="slds-var-p-top_small slds-grid slds-gutters">
             <div class="slds-col slds-grow-none">
                 <lightning-button
                     label="Add Row"

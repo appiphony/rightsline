@@ -40,7 +40,7 @@ export default class Modal extends LightningElement {
     }
 
     get modalContentClass() {
-        return 'slds-modal__content slds-p-around_' + this.contentPadding + (this.overflowVisible ? ' slds-expanded' : '');
+        return 'slds-modal__content slds-var-p-around_' + this.contentPadding + (this.overflowVisible ? ' slds-expanded' : '');
     }
     
     @api

@@ -16,6 +16,7 @@ export default class DebugLogStep extends LightningElement {
     openConfirmationModal() {
         this.confirmationModal.show();
     }
+    
     closeConfirmationModal() {
         this.confirmationModal.hide();
     }

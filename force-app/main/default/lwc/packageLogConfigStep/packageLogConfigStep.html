@@ -8,7 +8,7 @@
         <div slot="description" class="slds-container_small slds-container_center">
             This app includes a Package Logs custom object &amp; automatically creates activity logs for use in the debugging process. You can choose to log both success and error activity, or error activity alone.
         </div>
-        <div class="slds-card__header slds-grid slds-p-horizontal_large">
+        <div class="slds-card__header slds-grid slds-var-p-horizontal_large">
             <header class="slds-media slds-media_center slds-has-flexi-truncate">
                 <div class="slds-media__body">
                     <h2 class="slds-card__header-title">Activity Log Settings</h2>
@@ -24,13 +24,13 @@
                 </div>
             </header>
         </div>  
-        <div class="slds-border_top slds-p-horizontal_large slds-p-bottom_large slds-p-top_small">
+        <div class="slds-border_top slds-var-p-horizontal_large slds-var-p-bottom_large slds-var-p-top_small">
             <c-picklist
                 label="Logs Captured"
                 options={capturedActivityType}
                 value={capturedActivityValue}
                 onselect={updateCapturedActivityValue}
-                class="slds-m-bottom_medium">
+                class="slds-var-m-bottom_medium">
             </c-picklist>
             <div class="slds-is-relative">
                 <lightning-input
@@ -54,7 +54,7 @@
         </lightning-button>
         <lightning-button
             slot="footer"
-            class="slds-m-left_x-small"
+            class="slds-var-m-left_x-small"
             variant="destructive"
             label="Confirm"
             onclick={handleDeleteLogModal}>

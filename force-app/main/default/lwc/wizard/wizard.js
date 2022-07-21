@@ -150,7 +150,7 @@ export default class Wizard extends LightningElement {
             dismissible: event.detail.mode !== 'sticky',
             icon: {
                 class:
-                    'slds-icon_container slds-m-right_small slds-no-flex slds-align-top slds-icon-utility-' +
+                    'slds-icon_container slds-var-m-right_small slds-no-flex slds-align-top slds-icon-utility-' +
                     type,
                 name: iconName
             },

@@ -5,13 +5,13 @@
         </template> -->
         <span slot="description">
             <div class="slds-container_medium slds-container_center">
-                <p class="slds-m-bottom_x-small">Salesforce uses Apex jobs to automate processes such as data sync with third-party entities like Rightsline. You'll need to schedule a regular time for your Salesforce org to send data to Rightsline.</p>
+                <p class="slds-var-m-bottom_x-small">Salesforce uses Apex jobs to automate processes such as data sync with third-party entities like Rightsline. You'll need to schedule a regular time for your Salesforce org to send data to Rightsline.</p>
             </div>
         </span>
-        <div class="slds-m-around_large">
-            <div class="slds-scoped-notification slds-media slds-scoped-notification_light slds-m-bottom_medium">
+        <div class="slds-var-m-around_large">
+            <div class="slds-scoped-notification slds-media slds-scoped-notification_light slds-var-m-bottom_medium">
                 <div class="slds-media__body">
-                    <p class="slds-m-bottom_x-small slds-text-align_center">Choose how often the Inbound Data Sync job sends data from Salesforce to Rightsline.</p>
+                    <p class="slds-var-m-bottom_x-small slds-text-align_center">Choose how often the Inbound Data Sync job sends data from Salesforce to Rightsline.</p>
                 </div>
             </div>
             <div class="slds-grid slds-gutters_direct-xx-small">
@@ -52,7 +52,7 @@
                     >
                     </c-picklist>
                 </div>
-                <div class="slds-col slds-m-top_large slds-align_bottom slds-no-flex">
+                <div class="slds-col slds-var-m-top_large slds-align_bottom slds-no-flex">
                     <div class="slds-col">
                         <template if:true={isActive}>
                             <lightning-button
@@ -72,18 +72,18 @@
                     </div>
                 </div>
             </div>
-            <hr class="slds-m-vertical_large"></hr>
+            <hr class="slds-var-m-vertical_large"></hr>
             <!-- Other Scheduled Jobs -->
-            <div class="slds-scoped-notification slds-media slds-scoped-notification_light slds-m-bottom_medium">
+            <div class="slds-scoped-notification slds-media slds-scoped-notification_light slds-var-m-bottom_medium">
                 <div class="slds-media__body">
-                    <p class="slds-m-bottom_x-small slds-text-align_center">Below are all other scheduled Apex jobs in your Salesforce org. Avoid scheduling your Data Sync Job at the same time as the Apex jobs listed.</p>
+                    <p class="slds-var-m-bottom_x-small slds-text-align_center">Below are all other scheduled Apex jobs in your Salesforce org. Avoid scheduling your Data Sync Job at the same time as the Apex jobs listed.</p>
                 </div>
             </div>
             <h3 class="slds-text-heading_small">
                 Other Scheduled Jobs
             </h3>
             <table
-                class="slds-m-top_small slds-table slds-table_bordered slds-table_col-bordered slds-no-row-hover slds-border_left slds-border_right">
+                class="slds-var-m-top_small slds-table slds-table_bordered slds-table_col-bordered slds-no-row-hover slds-border_left slds-border_right">
                 <thead>
                     <tr class="slds-text-title_caps">
                         <th scope="col" class="slds-size_1-of-2">
@@ -138,7 +138,7 @@
         class="batchModal"
         title={modalTitle}
         onsecondary={cancelBatchModal}>
-        <div slot="" class="slds-text-align_center slds-is-relative slds-p-around_x-small">
+        <div slot="" class="slds-text-align_center slds-is-relative slds-var-p-around_x-small">
             <template if:true={loading}>
                 <lightning-spinner alternative-text="spinner"></lightning-spinner>
             </template>
@@ -160,7 +160,7 @@
             variant={modalButtonVariant}
             label={modalButtonLabel}
             onclick={confirmBatchModal}
-            class="slds-m-left_x-small">
+            class="slds-var-m-left_x-small">
         </lightning-button>
     </c-modal>
 </template>
