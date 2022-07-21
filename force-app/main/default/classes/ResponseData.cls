@@ -27,4 +27,8 @@ public with sharing class ResponseData {
         String jsonString = JSON.serialize(this);
         return jsonString.replaceAll('"' + constants.NAMESPACE_API + '([a-zA-Z0-9_]+?__(c|r))":', '"$1":');
     }
+
+    public String getJsonStringWithNamespace() {
+        return JSON.serialize(this);
+    }
 }

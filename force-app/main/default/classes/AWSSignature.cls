@@ -150,5 +150,39 @@ public class AWSSignature {
         
         return req;
     }
+
+    /*public class aws2 {
+        String region = 'us-west-2';
+        String service = 'execute-api';
+        String accessKey;
+        String secretKey;
+        String host = 'ris.rightsline.com';
+        String endpoint;
+        String method;
+        String amzDate = Datetime.now().formatGMT('yyyyMMdd\'T\'HHmmss\'Z\'');
+        String dateStamp = Datetime.now().formatGMT('yyyyMMdd');
+
+        public void setParams(String accessKeyInput, String secretKeyInput, String endpointInput, String methodInput){
+            accesskey = accessKeyInput;
+            secretKey = secretKeyInput;
+            endpoint = endpointInput;
+            method = methodInput;
+        }
+
+        public HttpResponse createSignatureRequest(){
+            HttpRequest request = new HttpRequest();
+            request.setMethod(method);
+
+            String canonicalRequest = createCanonicalRequest();
+        }
+
+        private String createCanonicalRequest() {
+            String canonicalRequest = method + '\n'
+                                    + '/' + endpoint + '\n'
+                                    + '' + '\n'
+                                    +
+        }
+
+    }*/
     
 }

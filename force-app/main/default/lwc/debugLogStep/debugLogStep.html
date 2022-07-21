@@ -24,12 +24,12 @@
                     <div class="slds-col slds-shrink-none slds-grow-none">
                         <div class="slds-form-element__label">Logged Activity</div>
                         <lightning-radio-group
-                            name="logLevel"
+                            name="logType"
                             label="Logged Activity"
                             variant="label-hidden"
-                            options={options}
-                            value={logLevel}
-                            onchange={handleChange}
+                            options={logTypeOptions}
+                            value={logType}
+                            onchange={changeLogType}
                             type="button"
                         ></lightning-radio-group>
                     </div>
@@ -47,7 +47,7 @@
                             type="number"
                             variant="label-hidden"
                             value={logLimit}
-                            onchange={handleChange}
+                            onchange={changeLogLimit}
                             label="Max Log Records Retained"
                         ></lightning-input>
                     </div>
@@ -56,7 +56,7 @@
                 <div class="slds-grid slds-grid_vertical-align-end slds-gutters_direct-xx-small">
                     <div class="slds-col">
                         <lightning-input
-                            value={logCount}
+                            value={currentLogRecordCount}
                             label="Log Record Count"
                             disabled
                         ></lightning-input>
@@ -67,7 +67,7 @@
                             icon-name="utility:delete"
                             variant="destructive"
                             label="Delete All"
-                            onclick={openConfirmationModal}
+                            onclick={handleDeleteLogModal}
                         ></lightning-button>
                     </div>
                 </div>
@@ -77,11 +77,22 @@
     <!-- MODAL -->
     <c-modal
         title="Delete Log Records?"
-        class="debug-confirmation-modal"
-        oncancel={closeConfirmationModal}>
+        class="debug-confirmation-modal">
         <div class="slds-text-align_center">
             <p class="slds-var-m-bottom_x-small">This will queue all existing log records in this Salesforce org for deletion.</p>
             <p>Deletion may take up to an hour to complete. Continue?</p>
         </div>
+        <lightning-button
+            slot="footer"
+            label="Cancel"
+            onclick={handleDeleteLogModal}>
+        </lightning-button>
+        <lightning-button
+            slot="footer"
+            class="slds-m-left_x-small"
+            variant="destructive"
+            label="Confirm"
+            onclick={handleDeleteLogModal}>
+        </lightning-button>
     </c-modal>
 </template>

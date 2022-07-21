@@ -51,7 +51,7 @@ export default class Wizard extends LightningElement {
             index = 0;
         }
 
-        this.showStep(this.steps[index]);
+        this.showStep(this.steps[index]);//here
         this.currentStepIndex = index;
         this.classList.remove('slds-hide');
         this.shown = true;

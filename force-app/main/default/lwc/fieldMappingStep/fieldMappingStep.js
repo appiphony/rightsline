@@ -1,104 +1,38 @@
 import { LightningElement, api, wire, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import saveData from '@salesforce/apex/setupAssistant.saveData';
-import getData from '@salesforce/apex/setupAssistant.getData';
-import initialCall from '@salesforce/apex/fieldMappingStep.initialCall';
-import getRightslineTemplates from '@salesforce/apex/fieldMappingStep.getRightslineTemplates';
+import getSetupData from '@salesforce/apex/setupAssistant.getData';
+import getData from '@salesforce/apex/fieldMappingStep.getData';
+import getRightslineFields from '@salesforce/apex/fieldMappingStep.getRightslineFields';
+import getSalesforceFields from '@salesforce/apex/fieldMappingStep.getSalesforceFields';
+import saveContactMapping from '@salesforce/apex/fieldMappingStep.saveContactMapping';
+import deleteContactMapping from '@salesforce/apex/fieldMappingStep.deleteContactMapping';
 
 export default class FieldMappingStep extends LightningElement {
 
-    @track templateList = {};
-    @track activeSection = 'group'; //Selected Vertical Nav Tab. Defaults to first available section
+    @track mappingList = [];
+    @track objList = [];
+    @track templateList = [];
+    @track objRecordTypeList = [];
+    @track objFieldList = [];
 
-    // Delete modal
-    
-    openDeleteModal() {
-        this.template.querySelector('.delete-modal').show();
-    }
+    @track mappingName;
+    @track activeMapping = {};
 
-    closeDeleteModal() {
-        this.template.querySelector('.delete-modal').hide();
-    }
+    @track templateValue = '';
+    @track objValue = '';
+    @track objRecordTypeValue = '';
 
-    get isGroup() {
-        return this.activeSection === "group";
-    }
-    get isClient() {
-        return this.activeSection === "client";
-    }
-
-    @track mappingName = 'Account - Customer Account';
-
-
-    get objectOptions() {
-        return [
-            {
-                label: 'Account',
-                value: 'account',
-            },
-            {
-                label: 'Contact',
-                value: 'contact',
-            }
-        ];
+    get disableRecordType() {
+        return this.objRecordTypeList.length === 1;
     }
 
     @track objectValue = 'account';
     @track objectLabel = 'Account';
 
-    updateObjectValue(event){
-        debugger;
-        let value = event.detail.value;
-        this.objectValue = value;
-    }
-
     @track recordTypeValue = 'customerAccount';
-    get recordTypeOptions() {
-        return [
-            {
-                label: 'Customer Account',
-                value: 'customerAccount',
-            },
-            {
-                label: 'Sales Account',
-                value: 'salesAccount',
-            }
-        ];
-    }
-
-    updateRecordValue(event) {
-        debugger;
-        let value = event.detail.value;
-        this.recordTypeValue = value;
-    }
 
     @track rlValue = 'customer';
-
-    get rlOptions() {
-        //return this.templateList;
-        return [
-            {
-                label: 'Customer',
-                value: 'customer',
-            },
-            {
-                label: 'Sales',
-                value: 'sales',
-            }
-        ];
-    }
-    
-    handleSectionSelect(event) {
-        this.activeSection = event.detail.name;
-        this.activeMapping = this[this.activeSection + 'Mapping'];
-    }
-
-    updateRlValue(event){
-        debugger;
-        let value = event.detail.value;
-        this.rlValue = value;
-    } 
-
 
     @track selectedObject = 'Account';
     @track setupData;
@@ -249,45 +183,112 @@ export default class FieldMappingStep extends LightningElement {
         }
     ];
 
+    get isClient() {
+        return this.activeSection === "client";
+    }
+
     // constructor() {
     //     super()
     //     this.template.addEventListener('next', this.next.bind(this))
     // }
 
-    connectedCallback () {
-        getRightslineTemplates().then(res => {
+    @api
+    show() {
+        return new Promise((resolve, reject) => {
+            getData().then(res => {
+                let parsedRes = JSON.parse(res);
+    
+                if (parsedRes.isSuccess) {
+                    debugger;
+                    this.mappingList = parsedRes.results.contactMappingList;
+                    this.objList = parsedRes.results.objList;
+                    this.templateList = parsedRes.results.templateList;
+    
+                    this.activeMapping = this.mappingList[0];
+                    this.templateValue = this.activeMapping.Rightsline_Template_Id__c;
+                    this.objValue = this.activeMapping.Salesforce_Object__c;
+
+                    getSalesforceFields({objName:this.objValue,getLookups:true}).then(res => {
+                        let parsedRes = JSON.parse(res);
+                        debugger;
+                        if (parsedRes.isSuccess) {
+                            debugger;
+                            this.objFieldList = parsedRes.fields[0].options;
+                            this.objRecordTypeList = parsedRes.recordTypeOptions;
+                            this.objRecordTypeValue = this.activeMapping.Salesforce_Object_Record_Type__c;
+                        } else {
+                            this.showToast('error', parsedRes.error);
+                        }
+                    }).catch(error => {
+                        this.showToast('error', error.message ? error.message : error.body.message);
+                    });
+                } else {
+                    this.showToast('error', parsedRes.error);
+                }
+            }).catch(error => {
+                this.showToast('error', error.message ? error.message : error.body.message);
+            }).finally(() => {
+                resolve()
+            })
+        })
+    }
+
+    updateTemplate(event) {
+        event.currentTarget.value = event.detail.value;
+        let value = event.detail.value;
+        this.templateValue = value;
+        getRightslineFields({templateId:this.templateValue}).then(res => {
             let parsedRes = JSON.parse(res);
             debugger;
             if (parsedRes.isSuccess) {
                 debugger;
-                this.templateList = parsedRes.results.templateList;
+                this.templateFieldList = parsedRes.results.templateFieldList;
             } else {
-                this.dispatchEvent(new CustomEvent('showtoast', {
-                    detail: {
-                        message : parsedRes.error,
-                        variant : 'error'
-                    },
-                    bubbles: true,
-                    composed: true
-                }));
+                this.showToast('error', parsedRes.error);
             }
-        })
+        });
     }
 
-    @api
-    show() {
-        return new Promise((resolve, reject) => {
-            getData().then(response => {
-                let responseData = JSON.parse(response)
-                if(responseData.isSuccess) {
-                    this.setupData = responseData.results.setupMetadata
-                    this.loading = false
-                    resolve()
-                } else {
-                    console.log(response)
-                }
-            })
-        })
+    updateObject(event){
+        event.currentTarget.value = event.detail.value;
+        let value = event.detail.value;
+        this.objValue = value;
+        getSalesforceFields({objName:this.objValue,getLookups:true}).then(res => {
+            let parsedRes = JSON.parse(res);
+            debugger;
+            if (parsedRes.isSuccess) {
+                debugger;
+                this.objFieldList = parsedRes.fields[0].options;
+                this.objRecordTypeList = parsedRes.recordTypeOptions;
+            } else {
+                this.showToast('error', parsedRes.error);
+            }
+        });
+    }
+
+    updateRecordType(event) {
+        event.currentTarget.value = event.detail.value;
+        let value = event.detail.value;
+        this.objRecordTypeValue = value;
+    }
+
+    openDeleteModal() {
+        this.template.querySelector('.delete-modal').show();
+    }
+
+    closeDeleteModal() {
+        this.template.querySelector('.delete-modal').hide();
+    }
+
+    updateRecordValue(event) {
+        debugger;
+        let recordValue = event.detail.value;
+        this.recordTypeValue = recordValue;
+    }
+
+    handleSectionSelect(event) {
+        debugger;
+        this.activeMapping = this.mappingList[event.detail.index];
     }
 
     next(event) {
@@ -318,30 +319,30 @@ export default class FieldMappingStep extends LightningElement {
 
     handleNext() {
         debugger;
-        initialCall().then(res => {
+        let setupMetadata = {
+            Steps_Completed__c : JSON.stringify({'C-FIELD-MAPPING-STEP' : 1})
+        }
+
+        saveData({setupMetadata:setupMetadata}).then(res => {
             let parsedRes = JSON.parse(res);
             if (parsedRes.isSuccess) {
                 //let results = responseData.results;
             } else {
-                this.dispatchEvent(new CustomEvent('showtoast', {
-                    detail: {
-                        message : parsedRes.error,
-                        variant : 'error'
-                    },
-                    bubbles: true,
-                    composed: true
-                }));
+                this.showToast('error', parsedRes.error);
             }
         }).catch(error => {
-            let message = error.message ? error.message : error.body.message;
-            this.dispatchEvent(new CustomEvent('showtoast', {
-                detail: {
-                    message : message,
-                    variant : 'error'
-                },
-                bubbles: true,
-                composed: true
-            }));
+            this.showToast('error', error.message ? error.message : error.body.message);
         });
+    }
+
+    showToast(type, message) {
+        this.dispatchEvent(new CustomEvent('showtoast', {
+            detail: {
+                message : message,
+                variant : type
+            },
+            bubbles: true,
+            composed: true
+        }));
     }
 }

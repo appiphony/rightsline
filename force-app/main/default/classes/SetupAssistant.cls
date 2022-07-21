@@ -26,21 +26,10 @@ public with sharing class SetupAssistant {
         try {
             checkAccess();
 
-            Setup_Settings__c settings = Setup_Settings__c.getOrgDefaults();
-            for (Schema.SObjectField field : Setup_Settings__c.sObjectType.getDescribe().fields.getMap().values()) {
-                Schema.DescribeFieldResult fieldDescribe = field.getDescribe();
-
-                if (fieldDescribe.isCustom()) {
-                    String fieldName = fieldDescribe.getName();
-
-                    if (null != settings.get(fieldName)) {
-                        settings.put(fieldName, constants.BLUR_STRING);
-                    }
-                }
-            }
+            List<AggregateResult> numPackageLogsList = [SELECT count(Id) packageLogCount FROM Package_Log__c];
 
             rd.put('setupMetadata', getSetupData());
-            rd.put('setupSettings', settings);
+            rd.put('currentLogRecordCount', numPackageLogsList[0].get('packageLogCount'));
         } catch (Exception e) {
             rd.addError(e);
         }
@@ -49,27 +38,15 @@ public with sharing class SetupAssistant {
     }
 
     @AuraEnabled
-    public static String saveData(Map<String, Object> setupData, Map<String, Object> setupSettings) {
+    public static String saveData(Map<String, Object> setupMetadata) {
         responseData rd = new responseData();
 
         try {
             checkAccess();
 
-            if (setupData != null) {
-                Setup_Data__c dataObj = (Setup_Data__c)utilities.getSobjectByMap(setupData, constants.NAMESPACE_API + 'Setup_Data__c');
+            if (setupMetadata != null) {
+                Setup_Metadata__mdt dataObj = (Setup_Metadata__mdt)utilities.getSobjectByMap(setupMetadata, constants.NAMESPACE_API + 'Setup_Metadata__mdt');
                 saveSetupData(dataObj);
-            }
-
-            if (setupSettings != null) {
-                for (String field : setupSettings.keySet()) {
-                    if (constants.BLUR_STRING == setupSettings.get(field)) {
-                        setupSettings.remove(field);
-                    }
-                }
-                Setup_Settings__c settingsObj = (Setup_Settings__c)utilities.getSobjectByMap(setupSettings, constants.NAMESPACE_API + 'Setup_Settings__c');
-                settingsObj.Id = Setup_Settings__c.getOrgDefaults().Id;
-
-                upsert settingsObj;
             }
 
             return getData();
@@ -118,86 +95,45 @@ public with sharing class SetupAssistant {
             setupMetadata.Temp_Access_Key__c = constants.BLUR_STRING;
             setupMetadata.Temp_Secret_Key__c = constants.BLUR_STRING;
         }
-
+        System.debug(setupMetadata);
         return setupMetadata;
     }
 
-    public static void saveSetupData(Setup_Data__c setupData) {
+    public static void saveSetupData(Setup_Metadata__mdt setupMetadata) {
         checkAccess();
         
-        List<Setup_Data__c> data = [SELECT Id, Steps_Completed__c 
-                                    FROM Setup_Data__c 
-                                    WHERE Name = 'Default'];
+        List<Setup_Metadata__mdt> data = [SELECT Id, Steps_Completed__c, Package_Log_Limit__c, Package_Log_Type__c
+                                    FROM Setup_Metadata__mdt 
+                                    WHERE Label = 'Default'];
 
         if (!data.isEmpty()) {
             // override id
-            setupData.Id = data[0].Id;
+            setupMetadata.Id = data[0].Id;
 
             // merge completed steps
-            if (String.isNotEmpty(setupData.Steps_Completed__c) && String.isNotEmpty(data[0].Steps_Completed__c)) {
+            if (String.isNotEmpty(setupMetadata.Steps_Completed__c) && String.isNotEmpty(data[0].Steps_Completed__c)) {
                 Map<String, Object> stepsCompleted = (Map<String, Object>)JSON.deserializeUntyped(data[0].Steps_Completed__c);
-                Map<String, Object> newStepsCompleted = (Map<String, Object>)JSON.deserializeUntyped(setupData.Steps_Completed__c);
+                Map<String, Object> newStepsCompleted = (Map<String, Object>)JSON.deserializeUntyped(setupMetadata.Steps_Completed__c);
                 newStepsCompleted.putAll(stepsCompleted);
-                setupData.Steps_Completed__c = JSON.serialize(newStepsCompleted);
+                setupMetadata.Steps_Completed__c = JSON.serialize(newStepsCompleted);
             }
         }
 
         // override name
-        setupData.Name = 'Default';
+        setupMetadata.Label = 'Default';
 
-        upsert setupData;
+        utilities.upsertMetadata('Setup_Metadata__mdt.' + setupMetadata.Label, 
+                                setupMetadata.Label,
+                                new LIST<string>{'Steps_Completed__c', 
+                                                'Package_Log_Limit__c',
+                                                'Package_Log_Type__c'},
+                                new LIST<object>{setupMetadata.Steps_Completed__c, 
+                                                setupMetadata.Package_Log_Limit__c,
+                                                setupMetadata.Package_Log_Type__c}
+                                );
     }
 
     private static void checkAccess() {
-        Set<String> dataReadFields = new Set<String>();
-        Set<String> dataUpdateFields = new Set<String>();
-
-        for (Schema.SObjectField field : Setup_Data__c.sObjectType.getDescribe().fields.getMap().values()) {
-            Schema.DescribeFieldResult fieldDescribe = field.getDescribe();
-
-            if (fieldDescribe.isCustom()) {
-                if (fieldDescribe.isAccessible()) {
-                    dataReadFields.add(fieldDescribe.getName());
-                }
-                if (fieldDescribe.isUpdateable()) {
-                    dataUpdateFields.add(fieldDescribe.getName());
-                }
-            }
-        }
-
-        dataReadFields.add('Name');
-        dataUpdateFields.add('Name');
-
-        Set<String> settingsReadFields = new Set<String>();
-        Set<String> settingsUpdateFields = new Set<String>();
-
-        for (Schema.SObjectField field : Setup_Settings__c.sObjectType.getDescribe().fields.getMap().values()) {
-            Schema.DescribeFieldResult fieldDescribe = field.getDescribe();
-
-            if (fieldDescribe.isCustom()) {
-                if (fieldDescribe.isAccessible()) {
-                    settingsReadFields.add(fieldDescribe.getName());
-                }
-                if (fieldDescribe.isUpdateable()) {
-                    settingsUpdateFields.add(fieldDescribe.getName());
-                }
-            }
-        }
-
-        settingsReadFields.add('Name');
-        settingsUpdateFields.add('Name');
-
-        DmlManager.checkAccess(new Map<String, Map<String, Set<String>>> {
-            'Setup_Data__c' => new Map<String, Set<String>> {
-                'Read' => dataReadFields,
-                'Create' => dataUpdateFields,
-                'Update' => dataUpdateFields
-            },
-            'Setup_Settings__c' => new Map<String, Set<String>> {
-                'Read' => settingsReadFields,
-                'Create' => settingsUpdateFields,
-                'Update' => settingsUpdateFields
-            }
-        });
+        //
     }
 }

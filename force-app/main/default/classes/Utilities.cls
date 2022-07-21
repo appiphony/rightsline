@@ -38,7 +38,7 @@ public with sharing class utilities {
         return (sObject)JSON.deserialize(JSON.serialize(objMap), Type.forName(sObjectName));
     }
 
-    public static HttpResponse makeRightslineCallout(String endPoint, String httpMethod, String body) {
+    public static HttpResponse makeCallout(String endPoint, String httpMethod, String body) {
         Setup_Metadata__mdt setupMetadata = [SELECT Id, Label, Api_Key__c, Access_Key__c, Secret_Key__c, Session_Token__c, Temp_Access_Key__c, Temp_Secret_Key__c FROM Setup_Metadata__mdt WHERE Label = 'Default' LIMIT 1];
 
         AWSSignature aws = new AWSSignature();
@@ -76,14 +76,15 @@ public with sharing class utilities {
 
                     HttpResponse retryResponse = new Http().send(retryRequest);
 
-                    utilities.Upsert_MDT_Value('Setup_Metadata__mdt.' + setupMetadata.Label, setupMetadata.Label,
-                                                new LIST<string>{'Session_Token__c', 
-                                                                'Temp_Access_Key__c', 
-                                                                'Temp_Secret_Key__c'},
-                                                new LIST<object>{(String)credsResponseBody.get('sessionToken'), 
-                                                                (String)credsResponseBody.get('accessKey'), 
-                                                                (String)credsResponseBody.get('secretKey')}
-                                                );
+                    utilities.upsertMetadata('Setup_Metadata__mdt.' + setupMetadata.Label, 
+                                            setupMetadata.Label,
+                                            new LIST<string>{'Session_Token__c', 
+                                                            'Temp_Access_Key__c', 
+                                                            'Temp_Secret_Key__c'},
+                                            new LIST<object>{(String)credsResponseBody.get('sessionToken'), 
+                                                            (String)credsResponseBody.get('accessKey'), 
+                                                            (String)credsResponseBody.get('secretKey')}
+                                            );
                     return retryResponse;
                 } else {
                     return credsResponse;
@@ -108,100 +109,37 @@ public with sharing class utilities {
         return new Http().send(request);
     }
     
-    public static void Upsert_MDT_Value(string strMDTAndRecord, string strMasterLabel, LIST<string> fieldLIST, LIST<object> valueLIST) {
-        // parameter passed should be the MDT.DeveloperName (i.e. MDT_Case_Webservice__mdt.Default_Get_SOQL)
-        // If this is an update to an existing record, only send the applicable field(s) to be updated
+    public static void upsertMetadata(String mdtFullName, String mdtLabel, List<String> fieldNameList, List<Object> fieldValueList) {
+        Metadata.CustomMetadata customMetadata = new Metadata.CustomMetadata();
+        customMetadata.fullName = Constants.NAMESPACE_API + mdtFullName;
+        customMetadata.label = mdtLabel;
 
-        // Setup custom metadata to be created
-        Metadata.CustomMetadata customMetadata =  new Metadata.CustomMetadata();
-        customMetadata.fullName = strMDTAndRecord;
-        customMetadata.label = strMasterLabel;
-    
-        Metadata.CustomMetadataValue customField = new Metadata.CustomMetadataValue();
-        integer nIndex = 0;
-        for (string strField : fieldLIST) {
-            customField = new Metadata.CustomMetadataValue();
-            customField.field = strField;
-            customField.value = valueLIST[nIndex];
+        Integer index = 0;
+        for(String fieldName : fieldNameList) {
+            Metadata.CustomMetadataValue customField = new Metadata.CustomMetadataValue();
+            customField.field = Constants.NAMESPACE_API + fieldName;
+            customField.value = fieldValueList[index];
             customMetadata.values.add(customField);
-            system.debug(customField);
-            
-            nIndex ++;
-        } // END for (string strField : fieldLIST)
-    
+            index++;
+        }
+
         Metadata.DeployContainer mdContainer = new Metadata.DeployContainer();
         mdContainer.addMetadata(customMetadata);
-    
-        // Setup deploy callback, MyDeployCallback implements
-        // the Metadata.DeployCallback interface (code for
-        // this class not shown in this example)
-        MetadataDeploy_Callback callback = new MetadataDeploy_Callback();
-    
-        // Enqueue custom metadata deployment
-        system.debug('Container: ' + mdContainer);
-        if (!test.isRunningTest()) Id jobId = Metadata.Operations.enqueueDeployment(mdContainer, callback);
-    } // END Upsert_MDT_Value
-    
-    public static void Upsert_MDT_Value(LIST<CustomMetadataType_DataType> CMDTLIST) {
-        // parameter passed should be a LIST of Custom Metadata Type Datatype with the MDT.DeveloperName (i.e. MDT_Case_Webservice__mdt.Default_Get_SOQL)
-        // If this is an update to an existing record, only send the applicable field(s) to be updated
 
-        Metadata.DeployContainer mdContainer = new Metadata.DeployContainer();
-        Metadata.CustomMetadata customMetadata =  new Metadata.CustomMetadata();
-        Metadata.CustomMetadataValue customField = new Metadata.CustomMetadataValue();
-        integer nIndex = 0;
-        for (CustomMetadataType_DataType cmdtItem : CMDTLIST) {
-            customMetadata =  new Metadata.CustomMetadata();
-            customMetadata.fullName = cmdtItem.strMDTAndRecord;
-            customMetadata.label = cmdtItem.strMasterLabel;
+        metadataCRUD callback = new metadataCRUD();
 
-            nIndex = 0;
-            for (string strField : cmdtItem.fieldLIST) {
-                customField = new Metadata.CustomMetadataValue();
-                customField.field = strField;
-                customField.value = cmdtItem.valueLIST[nIndex];
-                customMetadata.values.add(customField);
-                system.debug(customField);
-                
-                nIndex ++;
-            } // END for (string strField : fieldLIST)
-            system.debug(customMetadata);
-            mdContainer.addMetadata(customMetadata);
-        } // END for (CustomMetadataType_DataType cmdtItem : CMDTLIST) {
+        if(!Test.isRunningTest()) {
+            Id jobId = Metadata.Operations.enqueueDeployment(mdContainer, callback);
+        }
+    }
 
-        // Setup deploy callback, MyDeployCallback implements
-        // the Metadata.DeployCallback interface (code for
-        // this class not shown in this example)
-        MetadataDeploy_Callback callback = new MetadataDeploy_Callback();
-    
-        // Enqueue custom metadata deployment
-        system.debug('Container: ' + mdContainer);
-        if (!test.isRunningTest()) Id jobId = Metadata.Operations.enqueueDeployment(mdContainer, callback);
-    } // END Upsert_MDT_Value
-    
-    public class MetadataDeploy_Callback implements Metadata.DeployCallback {
-        public void handleResult(Metadata.DeployResult result, Metadata.DeployCallbackContext callbackContext) {
-            // Intentionally empty
-            system.debug(result);
-            system.debug(callbackContext);
-        } // END handleResult
-    } // END MetadataDeploy_Callback
-
-    public class CustomMetadataType_DataType {
-        /*
-        Created By: Robert Nunemaker
-        Created On: 07/31/2017
-        Purpose: DataType to store Custom Metadata Types for APEX upload in bulk
-        --------------------------------------------------------------------------
-        Modified By:  
-        Modified On:  
-        Modification: 
-        */
-
-        public string strMDTAndRecord; 
-        public string strMasterLabel;
-        public LIST<string> fieldLIST = new LIST<string>();
-        public LIST<object> valueLIST = new LIST<object>();
-    
+    public class metadataCRUD implements Metadata.DeployCallback {
+        public void handleResult(Metadata.DeployResult result, Metadata.DeployCallbackContext context) {
+            if (result.status == Metadata.DeployStatus.Succeeded) {
+                System.debug(' success : '+ result);
+            } else {
+                System.debug(' fail : '+ result);
+            }
+        }
     }
 }

@@ -2,27 +2,32 @@ import { LightningElement, track, api } from 'lwc'
 import getTempCreds from "@salesforce/apex/outboundConnectionStep.getTempCreds";
 import clearCreds from "@salesforce/apex/outboundConnectionStep.clearCreds";
 import getData from "@salesforce/apex/SetupAssistant.getData";
+import saveData from "@salesforce/apex/SetupAssistant.saveData";
 
 export default class outboundConnectionStep extends LightningElement {
     @track isComplete = false;
     loading = false;
     setupMetadata = {};
 
-    connectedCallback() {
-        getData().then(res => {
-            let parsedRes = JSON.parse(res);
-
-            if (parsedRes.isSuccess) {
-                this.setupMetadata = parsedRes.results.setupMetadata;
-                this.isComplete = this.setupMetadata.Access_Key__c == '********';
-            } else {
-                //
-            }
+    @api
+    show() {
+        debugger;
+        return new Promise((resolve, reject) => {
+            getData().then(res => {
+                let parsedRes = JSON.parse(res);
+    
+                if (parsedRes.isSuccess) {
+                    this.setupMetadata = parsedRes.results.setupMetadata;
+                    this.isComplete = this.setupMetadata.Access_Key__c == '********';
+                } else {
+                    this.showToast('error', parsedRes.error);
+                }
+            }).catch(error => {
+                this.showToast('error', error.message ? error.message : error.body.message);
+            }).finally(() => {
+                resolve()
+            })
         })
-    }
-
-    valueChanged() {
-        //
     }
 
     authorize() {
@@ -31,15 +36,7 @@ export default class outboundConnectionStep extends LightningElement {
         let secretKey = this.template.querySelector('.js-secretKey').value;
 
         if(!apiKey || !accessKey || !secretKey){
-            this.dispatchEvent(new CustomEvent('showtoast', {
-                detail: {
-                    message : 'Please fill in all required fields',
-                    variant : 'error'
-                },
-                bubbles: true,
-                composed: true
-            }));
-            //error toast
+            this.showToast('error', 'Please fill in all required fields.');
             return;
         }
 
@@ -58,41 +55,50 @@ export default class outboundConnectionStep extends LightningElement {
                 this.setupMetadata.Access_Key__c = '********';
                 this.setupMetadata.Secret_Key__c = '********';
             } else {
-                this.dispatchEvent(new CustomEvent('showtoast', {
-                    detail: {
-                        message : parsedRes.error,
-                        variant : 'error'
-                    },
-                    bubbles: true,
-                    composed: true
-                }));
+                this.showToast('error', parsedRes.error);
                 this.isComplete = false;
             }
         })
     }
 
     deauthorize() {
-
         clearCreds().then(res => {
             let parsedRes = JSON.parse(res);
             if (parsedRes.isSuccess) {
                 this.isComplete = false;
                 this.setupMetadata = {};
             } else {
-                this.dispatchEvent(new CustomEvent('showtoast', {
-                    detail: {
-                        message : parsedRes.error,
-                        variant : 'error'
-                    },
-                    bubbles: true,
-                    composed: true
-                }));
+                this.showToast('error', parsedRes.error);
                 this.isComplete = true;
             }
         })
     }
 
     handleNext() {
-        debugger;
+        let setupMetadata = {
+            Steps_Completed__c : JSON.stringify({'C-OUTBOUND-CONNECTION-STEP' : 1})
+        }
+
+        saveData({setupMetadata:setupMetadata}).then(res => {
+            let parsedRes = JSON.parse(res);
+            if (parsedRes.isSuccess) {
+                //let results = responseData.results;
+            } else {
+                this.showToast('error', parsedRes.error);
+            }
+        }).catch(error => {
+            this.showToast('error', error.message ? error.message : error.body.message);
+        });
+    }
+
+    showToast(type, message) {
+        this.dispatchEvent(new CustomEvent('showtoast', {
+            detail: {
+                message : message,
+                variant : type
+            },
+            bubbles: true,
+            composed: true
+        }));
     }
 }

@@ -9,7 +9,7 @@ public with sharing class SetupAssistantTest {
         System.assertEquals(Constants.NAMESPACE, sa.namespace);
     }
 
-    @isTest
+    /*@isTest
     static public void saveData() {
         Test.startTest();
         String response = SetupAssistant.saveData(new Map<String, Object>(), new Map<String, Object>());
@@ -38,5 +38,5 @@ public with sharing class SetupAssistantTest {
         Map<String, Object> resultsMap = (Map<String, Object>)responseMap.get('results');
         System.assert(resultsMap.containsKey('setupData'), '`data` not found');
         System.assert(resultsMap.containsKey('setupSettings'), '`settings` not found');
-    }
+    }*/
 }

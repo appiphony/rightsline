@@ -19,30 +19,17 @@ public with sharing class outboundConnectionStep {
 
                 List<Setup_Metadata__mdt> setupMetadataRecords = [SELECT Id, Label, Steps_Completed__c FROM Setup_Metadata__mdt WHERE Label = 'Default' LIMIT 1];
                 Setup_Metadata__mdt setupMetadata;
-                setupMetadata = setupMetadataRecords.isEmpty() ? new Setup_Metadata__mdt(MasterLabel = 'Default', Label = 'Default') : setupMetadataRecords[0];
+                setupMetadata = setupMetadataRecords.isEmpty() ? new Setup_Metadata__mdt(Label = 'Default') : setupMetadataRecords[0];
 
-                Map<String, Object> stepsCompleted = new Map<String, Object>{
-                    'C-OUTBOUND-CONNECTION-STEP' => 1
-                };
-
-                if (!String.isEmpty(setupMetadata.Steps_Completed__c)) {
-                    Map<String, Object> newStepsCompleted = (Map<String, Object>)JSON.deserializeUntyped(setupMetadata.Steps_Completed__c);
-                    newStepsCompleted.putall(stepsCompleted);
-                    setupMetadata.Steps_Completed__c = JSON.serialize(newStepsCompleted);
-                } else {
-                    setupMetadata.Steps_Completed__c = JSON.serialize(stepsCompleted);
-                }
-
-                utilities.Upsert_MDT_Value('Setup_Metadata__mdt.' + setupMetadata.Label, setupMetadata.Label,
-                                            new LIST<string>{'Steps_Completed__c', 
-                                                            'Api_Key__c', 
+                utilities.upsertMetadata('Setup_Metadata__mdt.' + setupMetadata.Label,
+                                            setupMetadata.Label,
+                                            new LIST<string>{'Api_Key__c', 
                                                             'Access_Key__c', 
                                                             'Secret_Key__c', 
                                                             'Session_Token__c', 
                                                             'Temp_Access_Key__c', 
                                                             'Temp_Secret_Key__c'},
-                                            new LIST<object>{setupMetadata.Steps_Completed__c, 
-                                                            apiKey, 
+                                            new LIST<object>{apiKey, 
                                                             accessKey, 
                                                             secretKey, 
                                                             sessionToken, 
@@ -64,11 +51,21 @@ public with sharing class outboundConnectionStep {
         try {
             Setup_Metadata__mdt setupMetadata = [SELECT Id, Label FROM Setup_Metadata__mdt WHERE Label = 'Default' LIMIT 1];
 
-            utilities.Upsert_MDT_Value('Setup_Metadata__mdt.' + setupMetadata.Label,
-                setupMetadata.Label,
-                new LIST<string>{'Api_Key__c', 'Access_Key__c', 'Secret_Key__c', 'Session_Token__c', 'Temp_Access_Key__c', 'Temp_Secret_Key__c'},
-                new LIST<object>{'', '', '', '', '', ''}
-                );
+            utilities.upsertMetadata('Setup_Metadata__mdt.' + setupMetadata.Label,
+                                    setupMetadata.Label,
+                                    new LIST<string>{'Api_Key__c', 
+                                                    'Access_Key__c', 
+                                                    'Secret_Key__c', 
+                                                    'Session_Token__c', 
+                                                    'Temp_Access_Key__c', 
+                                                    'Temp_Secret_Key__c'},
+                                    new LIST<object>{'', 
+                                                    '', 
+                                                    '', 
+                                                    '', 
+                                                    '', 
+                                                    ''}
+                                    );
         } catch (Exception e) {
             rd.addError(e);
         }

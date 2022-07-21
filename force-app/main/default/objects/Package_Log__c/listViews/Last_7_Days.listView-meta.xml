@@ -7,6 +7,10 @@
     <columns>Type__c</columns>
     <columns>Message__c</columns>
     <columns>Dump__c</columns>
+    <columns>isRetryLog__c</columns>
+    <columns>Object_Api_Name__c</columns>
+    <columns>Operation__c</columns>
+    <columns>Record_Id__c</columns>
     <filterScope>Everything</filterScope>
     <filters>
         <field>CREATED_DATE</field>

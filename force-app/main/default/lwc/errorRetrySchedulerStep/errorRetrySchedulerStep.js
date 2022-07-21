@@ -1,5 +1,5 @@
 import { LightningElement, api, track, wire } from 'lwc';
-import initialCall from '@salesforce/apex/errorRetrySchedulerStep.initialCall';
+import saveData from "@salesforce/apex/SetupAssistant.saveData";
 
 
 export default class errorRetrySchedulerStep extends LightningElement {
@@ -68,16 +68,19 @@ export default class errorRetrySchedulerStep extends LightningElement {
 
     handleNext() {
         debugger;
-        initialCall().then(response => {
-            const responseData = JSON.parse(response);
-            if (responseData.isSuccess) {
-                let results = responseData.results;
-            } else {
-                //
-            }
+        let setupMetadata = {
+            Steps_Completed__c : JSON.stringify({'C-ERROR-RETRY-SCHEDULER-STEP' : 1})
+        }
 
+        saveData({setupMetadata:setupMetadata}).then(res => {
+            let parsedRes = JSON.parse(res);
+            if (parsedRes.isSuccess) {
+                //let results = responseData.results;
+            } else {
+                this.showToast('error', parsedRes.error);
+            }
         }).catch(error => {
-            const message = error.message ? error.message : error.body.message;
+            this.showToast('error', error.message ? error.message : error.body.message);
         });
     }
 }

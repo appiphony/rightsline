@@ -126,8 +126,7 @@ export default class Landing extends LightningElement {
                 targetWizard = this.wizards[0];
             }
         }
-
         this.classList.add('slds-hide');
-        targetWizard.show();
+        targetWizard.show();//here
     }
 }
