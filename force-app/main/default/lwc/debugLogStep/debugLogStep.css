@@ -18,26 +18,26 @@
     height: 100%;
 }
 
-.notarize-log-success {
+.rl-log-success {
     color: #2e844a;
 }
 
-.notarize-log-error {
+.rl-log-error {
     color: #ea001e;
 }
 
-.notarize-label {
+.rl-label {
     position: absolute;
     top: 78px;
     left: 243px;
 }
 
-.notarize-label-focused .notarize-label {
+.rl-label-focused .rl-label {
     transform: translateY(125%);
     font-size: .75em;
     font-style: italic;
   }
 
-.notarize-log-label {
+.rl-log-label {
     margin-right: 0px;
 }

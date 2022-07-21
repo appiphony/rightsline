@@ -20,6 +20,7 @@ export default class FieldMappingStep extends LightningElement {
     get isGroup() {
         return this.activeSection === "group";
     }
+    
     get isClient() {
         return this.activeSection === "client";
     }
