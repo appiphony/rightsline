@@ -4,7 +4,7 @@ public with sharing class fieldMappingStep {
     public static String getData(){
         ResponseData rd = new ResponseData();
         try {
-            HttpResponse response = utilities.makeCallout('v4/contact-templates', 'GET', null);
+            HttpResponse response = Utilities.makeCallout('v4/contact-templates', 'GET', null);
             Map<String, Object> responseBody = (Map<String, Object>)JSON.deserializeUntyped(response.getBody());
 
             if (response.getStatusCode() == 200) {
@@ -58,7 +58,7 @@ public with sharing class fieldMappingStep {
     public static String getRightslineFields(String templateId){
         ResponseData rd = new ResponseData();
         try {
-            HttpResponse response = utilities.makeCallout('v4/contact-templates/' + templateId, 'GET', null);
+            HttpResponse response = Utilities.makeCallout('v4/contact-templates/' + templateId, 'GET', null);
             Map<String, Object> responseBody = (Map<String, Object>)JSON.deserializeUntyped(response.getBody());
             if (response.getStatusCode() == 200) {
                 List<Object> responseList = (List<Object>)responseBody.get('fields');
@@ -229,7 +229,7 @@ public with sharing class fieldMappingStep {
             Contact_Mapping__mdt contactMapping;
             contactMapping = contactMappingRecords.isEmpty() ? new Contact_Mapping__mdt(Label = contactMappingLabel, DeveloperName = contactMappingDeveloperName) : contactMappingRecords[0];
 
-            utilities.upsertMetadata('Contact_Mapping__mdt.' + contactMapping.DeveloperName,
+            Utilities.upsertMetadata('Contact_Mapping__mdt.' + contactMapping.DeveloperName,
                                         contactMapping.Label,
                                         new List<String>{'Outbound_Mapping__c', 
                                                         'Salesforce_Object__c', 
@@ -252,7 +252,7 @@ public with sharing class fieldMappingStep {
         try {
             Contact_Mapping__mdt contactMappingRecord = [SELECT Id, Label, DeveloperName FROM Contact_Mapping__mdt WHERE Label =:contactMappingLabel];
 
-            utilities.upsertMetadata('Contact_Mapping__mdt.' + contactMappingRecord.DeveloperName,
+            Utilities.upsertMetadata('Contact_Mapping__mdt.' + contactMappingRecord.DeveloperName,
                                         contactMappingLabel,
                                         new LIST<string>{'Outbound_Mapping__c', 
                                                         'Salesforce_Object__c', 

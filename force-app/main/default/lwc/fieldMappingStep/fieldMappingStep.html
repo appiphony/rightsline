@@ -5,13 +5,15 @@
                 <div class="slds-border_top slds-border_bottom slds-border_left slds-border_right" style="border-radius:0.25rem;">
                     <div class="slds-grid">
                         <div class="rl-vertical_nav slds-col slds-border_right">
-                            <lightning-vertical-navigation class="slds-var-m-bottom_small" selected-item={activeMappingObject.Label} onselect={handleSectionSelect}>
-                                <lightning-vertical-navigation-section label="Mappings">
-                                    <template for:each={mappingList} for:item="mapping" for:index="index">
-                                        <lightning-vertical-navigation-item key={mapping.label} label={mapping.Label} name={mapping.Label} data-index={index}></lightning-vertical-navigation-item>
-                                    </template>
-                                </lightning-vertical-navigation-section>
-                            </lightning-vertical-navigation>
+                            <template if:true={hasMappingList}>
+                                <lightning-vertical-navigation class="slds-var-m-bottom_small" selected-item={activeMappingObject.Label} onselect={handleSectionSelect}>
+                                    <lightning-vertical-navigation-section label="Mappings">
+                                        <template for:each={mappingList} for:item="mapping">
+                                            <lightning-vertical-navigation-item key={mapping.Label} label={mapping.Label} name={mapping.Label}></lightning-vertical-navigation-item>
+                                        </template>
+                                    </lightning-vertical-navigation-section>
+                                </lightning-vertical-navigation>
+                            </template>
                             <div class="slds-var-m-around_small">
                                 <lightning-button
                                     disabled={disableNewMappingButton}

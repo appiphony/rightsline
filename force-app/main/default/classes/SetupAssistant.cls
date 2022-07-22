@@ -45,7 +45,7 @@ public with sharing class SetupAssistant {
             checkAccess();
 
             if (setupMetadata != null) {
-                Setup_Metadata__mdt dataObj = (Setup_Metadata__mdt)utilities.getSobjectByMap(setupMetadata, constants.NAMESPACE_API + 'Setup_Metadata__mdt');
+                Setup_Metadata__mdt dataObj = (Setup_Metadata__mdt)Utilities.getSobjectByMap(setupMetadata, constants.NAMESPACE_API + 'Setup_Metadata__mdt');
                 saveSetupData(dataObj);
             }
 
@@ -122,7 +122,7 @@ public with sharing class SetupAssistant {
         // override name
         setupMetadata.Label = 'Default';
 
-        utilities.upsertMetadata('Setup_Metadata__mdt.' + setupMetadata.Label, 
+        Utilities.upsertMetadata('Setup_Metadata__mdt.' + setupMetadata.Label, 
                                 setupMetadata.Label,
                                 new LIST<string>{'Steps_Completed__c', 
                                                 'Package_Log_Limit__c',

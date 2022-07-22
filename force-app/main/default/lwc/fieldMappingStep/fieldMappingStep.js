@@ -43,6 +43,7 @@ export default class FieldMappingStep extends LightningElement {
     @track disableNewMappingButton = false;
     @track isTemplateUpdate = false;
     @track isObjectUpdate = false;
+    @track hasMappingList = false;
 
     get disableRecordType() {
         return this.objRecordTypeList.length < 2;
@@ -57,22 +58,27 @@ export default class FieldMappingStep extends LightningElement {
 
     @api
     show() {
+        debugger;
         return new Promise((resolve, reject) => {
             getData().then(res => {
                 let parsedRes = JSON.parse(res);
     
                 if (parsedRes.isSuccess) {
                     debugger;
+                    
+                    this.objList = parsedRes.results.objList;
+                    this.templateList = parsedRes.results.templateList;
+
+                    this.loadMaps = true;
+
                     if (parsedRes.results.contactMappingList.length === 0) {
                         this.createNewMapping();
                     } else {
-                        debugger;
+                          //debugger;
                         this.mappingList = parsedRes.results.contactMappingList;
-                        this.objList = parsedRes.results.objList;
-                        this.templateList = parsedRes.results.templateList;
-        
+                        this.hasMappingList = true;
+                        
                         this.activeMappingObject = this.mappingList[0];
-                        this.loadMaps = true;
                         this.templateValue = this.activeMappingObject.Rightsline_Template_Id__c;
                         this.objValue = this.activeMappingObject.Salesforce_Object__c;
 
@@ -93,12 +99,12 @@ export default class FieldMappingStep extends LightningElement {
     }
 
     updateSalesforceFields() {
-        debugger;
+          //debugger;
         getSalesforceFields({objName:this.objValue, getLookups:true}).then(res => {
             let parsedRes = JSON.parse(res);
-            debugger;
+              //debugger;
             if (parsedRes.isSuccess) {
-                debugger;
+                  //debugger;
                 this.objFieldList = parsedRes.results.fields[0].options;
                 this.objRecordTypeList = parsedRes.results.recordTypeOptions;
                 if (this.objRecordTypeList.length === 1) {
@@ -113,7 +119,6 @@ export default class FieldMappingStep extends LightningElement {
                             break;
                         }
                     }
-                    this.activeMappingObject.Label = this.objValue + ' - ' + templateLabel;
                 }
             } else {
                 this.showToast('error', parsedRes.error);
@@ -124,12 +129,12 @@ export default class FieldMappingStep extends LightningElement {
     }
 
     updateRightslineFields() {
-        debugger;
+          //debugger;
         getRightslineFields({templateId:this.templateValue}).then(res => {
             let parsedRes = JSON.parse(res);
-            debugger;
+              //debugger;
             if (parsedRes.isSuccess) {
-                debugger;
+                  //debugger;
                 this.templateFieldList = parsedRes.results.templateFieldList;
 
                 if (this.isTemplateUpdate) {
@@ -140,7 +145,7 @@ export default class FieldMappingStep extends LightningElement {
                             break;
                         }
                     }
-                    this.activeMappingObject.Label = this.objValue + ' - ' + templateLabel;
+                    
                     this.isTemplateUpdate = false;
 
                     this.activeMapping = [];
@@ -193,28 +198,29 @@ export default class FieldMappingStep extends LightningElement {
     }
 
     updateRecordValue(event) {
-        debugger;
+          //debugger;
         let recordValue = event.detail.value;
         this.recordTypeValue = recordValue;
     }
 
     handleSectionSelect(event) {
-        debugger;
+        console.log('event.detail: ' + event.detail.name);
         if(this.loadMaps && this.activeMappingObject.Label !== 'New Mapping') {
-            debugger;
             let selectedMapping = event.detail.name;
+            var mappingSelectionObject;
             for(let i = 0; i < this.mappingList.length; i++) {
                 if (this.mappingList[i].Label === selectedMapping) {
-                    this.activeMappingObject = this.mappingList[i];
+                    //this.activeMappingObject = this.mappingList[i];
+                    mappingSelectionObject = this.mappingList[i];
                     break;
                 }
-            }
-            this.objValue = this.activeMappingObject.Salesforce_Object__c;
-            this.objRecordTypeValue = this.activeMappingObject.Salesforce_Object_Record_Type__c;
-            this.templateValue = this.activeMappingObject.Rightsline_Template_Id__c;
+            }//array.find
+            this.objValue = mappingSelectionObject.Salesforce_Object__c;
+            this.objRecordTypeValue = mappingSelectionObject.Salesforce_Object_Record_Type__c;
+            this.templateValue = mappingSelectionObject.Rightsline_Template_Id__c;
             this.updateSalesforceFields();
             this.updateRightslineFields();
-            this.activeMapping = JSON.parse(this.activeMappingObject.Outbound_Mapping__c);
+            this.activeMapping = JSON.parse(mappingSelectionObject.Outbound_Mapping__c);
         }
     }
 
@@ -237,47 +243,71 @@ export default class FieldMappingStep extends LightningElement {
         this.templateValue = '';
         this.objRecordTypeValue = '';
         this.mappingList.push(this.activeMappingObject);
+        this.hasMappingList = true;
     }
 
     deleteMapping(event) {
-        debugger;
+          //debugger;
         if(this.activeMappingObject.Label === 'New Mapping'){
             this.disableNewMappingButton = false;
-        }
-
-        deleteContactMapping({contactMappingLabel: this.activeMappingObject.Label}).then(res => {
-            let parsedRes = JSON.parse(res);
-            debugger;
-            if (parsedRes.isSuccess) {
-                this.showToast('success', 'Mapping deleted successfully!');
+            if (this.mappingList.length === 1) {
+                this.showToast('error', 'You have no mappings saved to delete!');
+                this.disableNewMappingButton = true;
+            } else {
                 for (let i = 0; i < this.mappingList.length; i++) {
                     if (this.mappingList[i] === this.activeMappingObject) {
                         this.mappingList.splice(i,1);
                         break;
                     }
                 }
-                this.activeMappingObject = this.mappingList[0];
-                this.objValue = this.activeMappingObject.Salesforce_Object__c;
-                this.objRecordTypeValue = this.activeMappingObject.Salesforce_Object_Record_Type__c;
-                this.templateValue = this.activeMappingObject.Rightsline_Template_Id__c;
-                this.updateSalesforceFields();
-                this.updateRightslineFields();
-                this.activeMapping = JSON.parse(this.activeMappingObject.Outbound_Mapping__c);
                 if (this.mappingList.length === 0) {
                     this.createNewMapping();
+                } else {
+                    this.activeMappingObject = this.mappingList[0];
+                    this.objValue = this.activeMappingObject.Salesforce_Object__c;
+                    this.objRecordTypeValue = this.activeMappingObject.Salesforce_Object_Record_Type__c;
+                    this.templateValue = this.activeMappingObject.Rightsline_Template_Id__c;
+                    this.updateSalesforceFields();
+                    this.updateRightslineFields();
+                    this.activeMapping = JSON.parse(this.activeMappingObject.Outbound_Mapping__c);
                 }
-            } else {
-                this.showToast('error', parsedRes.error);
+            }
+        } else {
+            deleteContactMapping({contactMappingLabel: this.activeMappingObject.Label}).then(res => {
+                let parsedRes = JSON.parse(res);
+                  //debugger;
+                if (parsedRes.isSuccess) {
+                    this.showToast('success', 'Mapping deleted successfully!');
+                    for (let i = 0; i < this.mappingList.length; i++) {
+                        if (this.mappingList[i] === this.activeMappingObject) {
+                            this.mappingList.splice(i,1);
+                            break;
+                        }
+                    }
+                    if (this.mappingList.length === 0) {
+                        this.createNewMapping();
+                    } else {
+                        this.activeMappingObject = this.mappingList[0];
+                        this.objValue = this.activeMappingObject.Salesforce_Object__c;
+                        this.objRecordTypeValue = this.activeMappingObject.Salesforce_Object_Record_Type__c;
+                        this.templateValue = this.activeMappingObject.Rightsline_Template_Id__c;
+                        this.updateSalesforceFields();
+                        this.updateRightslineFields();
+                        this.activeMapping = JSON.parse(this.activeMappingObject.Outbound_Mapping__c);
+                    }
+                } else {
+                    this.showToast('error', parsedRes.error);
+                    if(this.activeMappingObject.Label === 'New Mapping'){
+                        this.disableNewMappingButton = true;
+                    }
+                }
+            }).catch(error => {
+                this.showToast('error', error.message ? error.message : error.body.message);
                 if(this.activeMappingObject.Label === 'New Mapping'){
                     this.disableNewMappingButton = true;
                 }
-            }
-        }).catch(error => {
-            this.showToast('error', error.message ? error.message : error.body.message);
-            if(this.activeMappingObject.Label === 'New Mapping'){
-                this.disableNewMappingButton = true;
-            }
-        })
+            })
+        }
 
         this.template.querySelector('c-modal').hide();
     }
@@ -286,6 +316,10 @@ export default class FieldMappingStep extends LightningElement {
         debugger;
 
         let resObj = this.template.querySelector('c-data-mapper').retrieveOutboundMapping();
+
+        if (this.objValue === '' || this.templateValue === '') {
+            resObj.valid = false;
+        }
 
         if (resObj.valid === true) {
             let templateLabel = '';
@@ -306,15 +340,17 @@ export default class FieldMappingStep extends LightningElement {
             };
 
             let count = 0;
-            for (let i = 0; i < this.mappingList; i++) {
-                if (this.mappingList[i].Label === this.objValue + ' - ' + templateLabel) {
+            for (let i = 0; i < this.mappingList.length; i++) {
+                if (this.mappingList[i].Label === this.activeMappingObject.Label) {
                     count++;
                     if (count === 2) {
                         break;
                     }
+                    debugger;
                     this.activeMappingObject = savePayload;
-                    this.mappingList[i] = this.activeMappingObject;
+                    this.mappingList[i] = savePayload;
                     this.activeMapping = resObj.outboundMapping;
+                    this.disableNewMappingButton = false;
                 }
             }
 
@@ -340,7 +376,7 @@ export default class FieldMappingStep extends LightningElement {
     }
 
     next(event) {
-        debugger;
+          //debugger;
         event.stopPropagation();
         this.template.querySelector('c-data-mapper').validate().then(() => {
             saveData({
@@ -367,7 +403,7 @@ export default class FieldMappingStep extends LightningElement {
     }
 
     handleNext() {
-        debugger;
+          //debugger;
         let setupMetadata = {
             Steps_Completed__c : JSON.stringify({'C-FIELD-MAPPING-STEP' : 1})
         }

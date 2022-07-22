@@ -1,4 +1,4 @@
-public with sharing class utilities {
+public with sharing class Utilities {
     public static sObject getSobjectByMap(Map<String, Object> sourceMap, String sObjectName) {
         return getSobjectByMap(sourceMap, sObjectName, constants.NAMESPACE_API);
     }
@@ -76,7 +76,7 @@ public with sharing class utilities {
 
                     HttpResponse retryResponse = new Http().send(retryRequest);
 
-                    utilities.upsertMetadata('Setup_Metadata__mdt.' + setupMetadata.Label, 
+                    Utilities.upsertMetadata('Setup_Metadata__mdt.' + setupMetadata.Label, 
                                             setupMetadata.Label,
                                             new LIST<string>{'Session_Token__c', 
                                                             'Temp_Access_Key__c', 
