@@ -33,7 +33,7 @@ public with sharing class AvailableCatalogItemsApi {
         Integer start {get;set;}
         Integer rows {get;set;}
 
-        public AvailableCatalogItemsApiRequestBody(){
+        public AvailableCatalogItemsApiRequestBody(Integer offset){
             recordId = new List<Integer>();
             //POC Construction, needs to be changed (TODO)
             dim1 = new List<Integer>();
@@ -51,17 +51,17 @@ public with sharing class AvailableCatalogItemsApi {
             isExclusive = null;
             matchType = 'CoverEntire';
             isExact = true;
-            start = 0;
+            start = offset;
             rows = 25;            
         }
     }
 
     @AuraEnabled
-    public static string getAvailableCatalogItems(){
+    public static string getAvailableCatalogItems(Integer offset){
         ResponseData rd = new ResponseData();
         try{
 
-            AvailableCatalogItemsApiRequestBody rbody = new AvailableCatalogItemsApiRequestBody();
+            AvailableCatalogItemsApiRequestBody rbody = new AvailableCatalogItemsApiRequestBody(offset);
             System.debug(JSON.serialize(rbody));
 
             HttpResponse res = Utilities.makeRightslineCallout('v4/avails/available-catalog-items', 'POST', JSON.serialize(rbody)); 

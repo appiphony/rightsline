@@ -5,9 +5,9 @@ public class AWSSignature {
     String key = ''; //AWS key
     String secret = ''; //AWS Secret key
     String host = ''; //nsys.inf4mation.com
-    String resource='';
+    String resource = '';
     String method;
-    String body;
+    String body ='';
     
     //date for headers and the credential string
     String amzDate = Datetime.now().formatGMT('yyyyMMdd\'T\'HHmmss\'Z\'');

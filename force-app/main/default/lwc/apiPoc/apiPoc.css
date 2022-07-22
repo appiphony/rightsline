@@ -1,0 +1,8 @@
+.poc_height-limiter {
+    max-height: 400px;
+    overflow-y: scroll;
+}
+
+.move-list-right{
+    margin-left: 50px;
+}

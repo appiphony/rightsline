@@ -47,7 +47,9 @@ public with sharing class Utilities {
         //aws.setUrl('patient.sysinfo.com','api/patient');
         aws.setUrl('ris.rightsline.com', endPoint);
         aws.setMethod(httpMethod);
-        aws.setBody(body);
+        if(body != null){
+            aws.setBody(body);
+        }        
 
         HttpRequest request = aws.createSigntaureRequest();
         request.setHeader('Content-Type','application/json');

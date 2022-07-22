@@ -8,12 +8,26 @@
                 </div>
                 <div class="slds-media__body">
                     <h2 class="slds-card__header-title">
-                        <strong> Rightsline </strong>								
+                        <strong> Rightsline API Testing </strong>								
                     </h2>
                 </div>
+                <lightning-button label="Get Dimensions Options" onclick={handleGetDimensionsOptionsClick}></lightning-button>                    
                 <lightning-button label="Get Available Catalog Items" onclick={handleGetAvailableCatalogItemsClick}></lightning-button>                    
+                <lightning-button label="Get Deal Templates" onclick={handleGetDealTemplatesClick}></lightning-button>                    
+                <lightning-button label="Get Template" onclick={handleGetTemplateClick}></lightning-button>                    
             </header>
         </div>	
+        <div class="poc_height-limiter">
+            <template if:true={availableCatalogItems}>    
+            <ol type="1" class="slds-list_ordered move-list-right">
+                <template for:each={availableCatalogItems} for:item="obj" for:index="index">
+                    <li key={obj.id}>
+                        {obj.title} 
+                    </li>
+                </template>                
+            </ol>
+            </template>
+        </div>
     </div>
 
 
