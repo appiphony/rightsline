@@ -16,7 +16,7 @@
             </div>
             <div class="slds-grid slds-gutters_direct-xx-small">
                 <div class="slds-col slds-is-relative">
-                    <div class="slds-is-absolute bss-tooltip">
+                    <div class="slds-is-absolute rl-tooltip">
                         <lightning-helptext content="For jobs that run Daily, you may select a desired job start time."></lightning-helptext>
                     </div>
                     <c-picklist
@@ -30,18 +30,6 @@
                     </c-picklist>
                 </div>
                 <div class="slds-col slds-size_3-of-7">
-                    <!-- <template if:true={onceDaily}>
-                        <c-picklist>
-                        </c-picklist>
-                    </template>
-                    <template if:false={onceDaily}>
-                        <c-picklist
-                            disabled
-                            label="Job Start Time"
-                            options={nonDailyJobStartHourOptions}
-                            value="asap">
-                        </c-picklist>
-                    </template> -->
                     <c-picklist
                     label="Job Start Time"
                     options={jobStartHourPicklist}
@@ -121,15 +109,6 @@
                             </tr>
                         </template>
                     </template>
-                    <!-- EMPTY STATE -->
-                    <!-- <template if:false={otherJobs.length}>
-                        <tr class="pcc-empty-state">
-                            <td colspan="3" class="slds-text-color_weak slds-text-align_center">
-                                <em>No scheduled jobs</em>
-                            </td>
-                        </tr>
-                    </template> -->
-                    <!-- /EMPTY STATE -->
                 </tbody>
             </table>
         </div>
