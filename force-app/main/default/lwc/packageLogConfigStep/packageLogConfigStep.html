@@ -1,0 +1,63 @@
+<template>
+    <c-step
+        header="Package Log Management"
+        container-size="small"
+        back-hidden
+        next-label="Finish"
+        next-icon-name ="utility:check">
+        <div slot="description" class="slds-container_small slds-container_center">
+            This app includes a Package Logs custom object &amp; automatically creates activity logs for use in the debugging process. You can choose to log both success and error activity, or error activity alone.
+        </div>
+        <div class="slds-card__header slds-grid slds-var-p-horizontal_large">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title">Activity Log Settings</h2>
+                </div>
+                <div class="slds-no-flex">
+                    <lightning-button
+                        label="Delete All"
+                        title="Delete All"
+                        icon-name="utility:delete"
+                        disabled={disableDeletelogs}
+                        onclick={handleDeleteLogModal}>
+                    </lightning-button>
+                </div>
+            </header>
+        </div>  
+        <div class="slds-border_top slds-var-p-horizontal_large slds-var-p-bottom_large slds-var-p-top_small">
+            <c-picklist
+                label="Logs Captured"
+                options={capturedActivityType}
+                value={capturedActivityValue}
+                onselect={updateCapturedActivityValue}
+                class="slds-var-m-bottom_medium">
+            </c-picklist>
+            <div class="slds-is-relative">
+                <lightning-input
+                    type="number"
+                    label="Max Log Records Retained"
+                    value={logRecordsRetainedLimit}
+                    field-level-help="This is the maximum number of log records that will be saved in this Salesforce organization. If the limit is hit, older records will be automatically removed to make room for new ones.">
+                </lightning-input>
+                <div class="strike-label_records-captured slds-is-absolute slds-form-element__label">Current Records Captured: {currentLogRecordCount}</div>
+            </div>
+        </div>
+    </c-step>
+    <c-modal
+        class="strike-delete-logs"
+        title="Delete Captured Logs">
+        <div class="slds-text-align_center">You are about to delete {currentLogRecordCount} captured acitivity logs. Are you want to delete these logs?</div>
+        <lightning-button
+            slot="footer"
+            label="Cancel"
+            onclick={handleDeleteLogModal}>
+        </lightning-button>
+        <lightning-button
+            slot="footer"
+            class="slds-var-m-left_x-small"
+            variant="destructive"
+            label="Confirm"
+            onclick={handleDeleteLogModal}>
+        </lightning-button>
+    </c-modal>
+</template>

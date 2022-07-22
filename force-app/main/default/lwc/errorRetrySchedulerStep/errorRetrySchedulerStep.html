@@ -1,0 +1,132 @@
+<template>
+    <c-step header="Outbound Data Sync Retry" container-size="small" onnext={handleNext} next-disabled={nextDisabled} next-label="Finish">
+        <template if:true={loading}>
+            <lightning-spinner alternative-text="spinner"></lightning-spinner>
+        </template>
+        <span slot="description">
+            <div class="slds-container_small slds-container_center">
+                <p class="slds-var-m-bottom_x-small">In the event of an Outbound Data Sync failure, the Retry Sync Job will capture any unsynced interactions and attempt to resend them to Rightsline.</p>
+            </div>
+        </span>
+        <div class="slds-var-m-around_large">
+            <div class="slds-scoped-notification slds-media slds-scoped-notification_light slds-var-m-bottom_medium">
+                <div class="slds-media__body">
+                    <p class="slds-var-m-bottom_x-small slds-text-align_center">The Retry Sync Job will run once per day. Schedule a time for it to check for unsynced interactions and attempt to resend them.</p>
+                </div>
+            </div>
+            <div class="slds-grid slds-gutters_direct-xx-small">
+                <div class="slds-col">
+                    <c-picklist
+                    options={options}
+                    value={value}
+                    onchange={updateValue}
+                    onselect={updateValue}
+                    label="Job Start Time"
+                    disabled={isActive}
+                    >
+                    </c-picklist>
+                </div>
+                <div class="slds-col slds-var-m-top_large slds-align_bottom slds-no-flex">
+                    <div class="slds-col">
+                        <template if:true={isActive}>
+                            <lightning-button
+                            label="Deactivate"
+                            onclick={openBatchModal}
+                            variant="destructive"
+                            >
+                            </lightning-button>
+                        </template>
+                        <template if:false={isActive}>
+                            <lightning-button
+                            label="Schedule Job"
+                            onclick={openBatchModal}
+                            disabled={scheduleDisabled}>
+                            </lightning-button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+            <hr class="slds-var-m-vertical_large"></hr>
+            <!-- Other Scheduled Jobs -->
+            <div class="slds-scoped-notification slds-media slds-scoped-notification_light slds-var-m-bottom_medium">
+                <div class="slds-media__body">
+                    <p class="slds-var-m-bottom_x-small slds-text-align_center">Below are all other scheduled Apex jobs in your Salesforce org. Avoid scheduling your Retry Sync Job at the same time as the Apex jobs listed.</p>
+                </div>
+            </div>
+            <h3 class="slds-text-heading_small">
+                Other Scheduled Jobs
+            </h3>
+            <table
+                class="slds-var-m-top_small slds-table slds-table_bordered slds-table_col-bordered slds-no-row-hover slds-border_left slds-border_right">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" class="slds-size_2-of-3">
+                            <div class="slds-truncate" title="Job Name">Job Name</div>
+                        </th>
+                        <th scope="col" class="slds-size_1-of-3">
+                            <div class="slds-truncate" title="Next Run Time">Next Run Time</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template if:false={otherJobs}>
+                        <tr>
+                            <td colspan="2">
+                                <div class="slds-truncate slds-align_absolute-center" title="Other Job">
+                                    <em><span class="slds-text-align_center slds-text-color_weak">There are no other scheduled jobs in this Salesforce org.</span></em>
+                                </div>
+                            </td>
+
+                        </tr>
+                    </template>
+                    <template if:true={otherJobs}>
+                        <template for:each={otherJobs} for:item="otherJob">
+                            <tr key={otherJob.Id}>
+                                <td>
+                                    <div class="slds-truncate" title={otherJob.CronJobDetail.Name}>
+                                        {otherJob.CronJobDetail.Name}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="slds-truncate" title={otherJob.NextFireTime}>
+                                        {otherJob.nextFireTime}
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </c-step>
+    <!-- Confirmation modal -->
+    <c-modal
+        class="batchModal"
+        title={modalTitle}
+        onsecondary={cancelBatchModal}>
+        <div slot="" class="slds-text-align_center slds-is-relative slds-var-p-around_x-small">
+            <template if:true={loading}>
+                <lightning-spinner alternative-text="spinner"></lightning-spinner>
+            </template>
+            <template if:false={isActive}>
+                <p>Are you sure you want to activate this job?</p>
+            </template>
+            <template if:true={isActive}>
+                <p>Are you sure you want to deactivate this job? If it is not active for more than 24 hours, data can get out of sync.</p>
+            </template>
+        </div>
+        <lightning-button
+            slot="footer"
+            variant="neutral"
+            label="Cancel"
+            onclick={cancelBatchModal}>
+        </lightning-button>
+        <lightning-button
+            slot="footer"
+            variant={modalButtonVariant}
+            label={modalButtonLabel}
+            onclick={confirmBatchModal}
+            class="slds-var-m-left_x-small">
+        </lightning-button>
+    </c-modal>
+</template>
