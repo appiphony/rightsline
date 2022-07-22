@@ -59,7 +59,7 @@ export default class syncSchedulerStep extends LightningElement {
                 value: '4:00 AM'
             },
         ]
-    }
+    };
 
     @track otherJobs = [
         {
@@ -67,13 +67,10 @@ export default class syncSchedulerStep extends LightningElement {
             Name: 'Error Retry Job',
             nextFireTime: '12:00 AM',
         }
-    ]
+    ];
 
     updateValue(event){
-        let value = event.detail.value;
-        let label = event.detail.label;
-
-        this.value = value;
-        this.label = label;
+        this.value = event.detail.value;
+        this.label = event.detail.label;
     }
 }
