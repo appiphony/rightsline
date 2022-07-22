@@ -12,12 +12,12 @@ export default class errorRetrySchedulerStep extends LightningElement {
     openBatchModal() {
         if(this.isActive) {
             this.modalTitle = 'Deactivate Job';
-            this.modalButtonVariant = 'destructive'
-            this.modalButtonLabel = 'Deactivate'
+            this.modalButtonVariant = 'destructive';
+            this.modalButtonLabel = 'Deactivate';
         } else {
             this.modalTitle = 'Activate Job';
-            this.modalButtonVariant = 'brand'
-            this.modalButtonLabel = 'Activate'
+            this.modalButtonVariant = 'brand';
+            this.modalButtonLabel = 'Activate';
         }
         this.template.querySelector('.batchModal').show();
     }
@@ -55,13 +55,10 @@ export default class errorRetrySchedulerStep extends LightningElement {
                 value: '4:00 AM'
             },
         ]
-    }
+    };
 
     updateValue(event){
-        let value = event.detail.value;
-        let label = event.detail.label;
-
-        this.value = value;
-        this.label = label;
+        this.value = event.detail.value;
+        this.label = event.detail.label;
     }
 }
