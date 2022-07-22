@@ -11,5 +11,5 @@ export default class InboundConnectorStep extends LightningElement {
             label: '1',
             value: '1'
         }
-    ]
+    ];
 }
