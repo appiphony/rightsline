@@ -4,29 +4,32 @@ import saveData from '@salesforce/apex/setupAssistant.saveData';
 import getData from '@salesforce/apex/setupAssistant.getData';
 
 export default class FieldMappingStep extends LightningElement {
-
-    @track activeSection = 'group'; //Selected Vertical Nav Tab. Defaults to first available section
-
-    // Delete modal
     
-    openDeleteModal() {
-        this.template.querySelector('.delete-modal').show();
-    }
+    // DUMMY DATA
 
-    closeDeleteModal() {
-        this.template.querySelector('.delete-modal').hide();
-    }
+    //Selected vertical nav tab
+    @track activeSection = 'group'; 
 
     get isGroup() {
         return this.activeSection === "group";
     }
-    
-    get isClient() {
-        return this.activeSection === "client";
+
+    handleSectionSelect(event) {
+        this.activeSection = event.detail.name;
+        this.activeMapping = this[this.activeSection + 'Mapping'];
     }
 
+    updateValue(event){
+        let value = event.detail.value;
+        this.value = value;
+    }
+
+    //Active mapping name
     @track mappingName = 'Account - Customer Account'
 
+    //Selected Salesforce object
+    @track objectValue = 'account';
+    @track objectLabel = 'Account';
 
     get objectOptions() {
         return [
@@ -41,15 +44,13 @@ export default class FieldMappingStep extends LightningElement {
         ]
     }
 
-    @track objectValue = 'account'
-    @track objectLabel = 'Account'
-
     updateObjectValue(event){
         this.value = event.detail.value;
-        this.value = objectValue;
     }
 
-    @track recordTypeValue = 'customerAccount'
+    // Selected Salesforce record type
+    @track recordTypeValue = 'customerAccount';
+
     get recordTypeOptions() {
         return [
             {
@@ -63,7 +64,8 @@ export default class FieldMappingStep extends LightningElement {
         ]
     }
 
-    @track rlValue = 'customer'
+    // Selected Rightsline value
+    @track rlValue = 'customer';
 
     get rlOptions() {
         return [
@@ -77,18 +79,8 @@ export default class FieldMappingStep extends LightningElement {
             },
         ]
     }
-    
-    handleSectionSelect(event) {
-        this.activeSection = event.detail.name;
-        this.activeMapping = this[this.activeSection + 'Mapping'];
-    }
 
-    updateValue(event){
-        let value = event.detail.value;
-        this.value = value;
-    } 
-
-
+    // Field mappings
     @track selectedObject = 'Account'
     @track setupData
     @track defaultMapping = {
@@ -238,11 +230,7 @@ export default class FieldMappingStep extends LightningElement {
         }
     ]
 
-    // constructor() {
-    //     super()
-    //     this.template.addEventListener('next', this.next.bind(this))
-    // }
-
+    // ACTUAL DATA MAPPER CODE
     @api
     show() {
         return new Promise((resolve, reject) => {
@@ -282,5 +270,14 @@ export default class FieldMappingStep extends LightningElement {
         }).catch(error => {
             console.log(error)
         })
+    }
+
+    // Delete Mapping confirmation modal 
+    openDeleteModal() {
+        this.template.querySelector('.delete-modal').show();
+    }
+
+    closeDeleteModal() {
+        this.template.querySelector('.delete-modal').hide();
     }
 }
