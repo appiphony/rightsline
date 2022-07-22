@@ -19,6 +19,23 @@ export default class DataMapper extends LightningElement {
     @track sfOptions
     @track tpOptions
 
+    @track _outboundMapping;
+
+    @track outboundMap = [];
+
+    set outboundMapping(value) {
+        this._outboundMapping = JSON.parse(JSON.stringify(value));
+    }
+
+    @api
+    get outboundMapping() {
+        return this._outboundMapping;
+    }
+
+    get hasMapping() {
+        return this.outboundMapping.length > 1;
+    }
+
     @api 
     get sfObject() {
         return this.mapping ? this.mapping.sfObject : null
@@ -108,6 +125,30 @@ export default class DataMapper extends LightningElement {
     // CB EDIT
     get showRemove() {
         return this._sfObject
+    }
+
+    selectField(event) {
+        debugger;
+        let fieldValue = event.detail;
+        let index = parseInt(event.currentTarget.dataset.mapindex, 10);
+        this._outboundMapping[index].sfField = fieldValue.value;
+    }
+
+    @api
+    retrieveOutboundMapping() {
+        debugger;
+        let valid = true;
+        for(let i = 0; i < this._outboundMapping.length; i++) {
+            if(this._outboundMapping[i].required === true && this._outboundMapping[i].sfField === '') {
+                valid = false;
+                break;
+            }
+        }
+
+        return {
+            outboundMapping : this._outboundMapping,
+            valid : valid
+        };
     }
 
     @api

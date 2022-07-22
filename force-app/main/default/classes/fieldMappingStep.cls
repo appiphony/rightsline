@@ -62,14 +62,14 @@ public with sharing class fieldMappingStep {
             Map<String, Object> responseBody = (Map<String, Object>)JSON.deserializeUntyped(response.getBody());
             if (response.getStatusCode() == 200) {
                 List<Object> responseList = (List<Object>)responseBody.get('fields');
-                List<Map<String, String>> fieldList = new List<Map<String, String>>();
+                List<Map<String, Object>> fieldList = new List<Map<String, Object>>();
 
                 for(Object field : responseList) {
                     Map<String, Object> fieldMap = (Map<String, Object>)field;
-                    fieldList.add(new Map<String, String> {
-                        'label' => String.valueOf(fieldMap.get('fieldName')),
-                        'value' => String.valueOf(fieldMap.get('label')),
-                        'required' => String.valueOf(fieldMap.get('required'))
+                    fieldList.add(new Map<String, Object> {
+                        'label' => fieldMap.get('fieldName'),
+                        'value' => fieldMap.get('label'),
+                        'required' => fieldMap.get('required')
                     });
                 }
 
@@ -220,6 +220,7 @@ public with sharing class fieldMappingStep {
     public static String saveContactMapping(String jsonString){
         ResponseData rd = new ResponseData();
         try {
+            System.debug(jsonString);
             Map<String, Object> contactMappingMap = (Map<String, Object>)JSON.deserializeUntyped(jsonString);
             String contactMappingLabel = (String)contactMappingMap.get('Label');
             String contactMappingDeveloperName = (String)contactMappingMap.get('DeveloperName');
@@ -234,10 +235,10 @@ public with sharing class fieldMappingStep {
                                                         'Salesforce_Object__c', 
                                                         'Salesforce_Object_Record_Type__c', 
                                                         'Rightsline_Template_Id__c'},
-                                        new List<Object>{contactMappingMap.get('outboundMapping'), 
-                                                        contactMappingMap.get('salesforceObject'), 
-                                                        contactMappingMap.get('salesforceObjectRecordType'), 
-                                                        contactMappingMap.get('rightslineTemplateId')}
+                                        new List<Object>{contactMappingMap.get('Outbound_Mapping__c'), 
+                                                        contactMappingMap.get('Salesforce_Object__c'), 
+                                                        contactMappingMap.get('Salesforce_Object_Record_Type__c'), 
+                                                        contactMappingMap.get('Rightsline_Template_Id__c')}
                                         );
         } catch (Exception e) {
             rd.addError(e);

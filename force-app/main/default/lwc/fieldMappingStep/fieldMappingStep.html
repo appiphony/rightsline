@@ -5,25 +5,25 @@
                 <div class="slds-border_top slds-border_bottom slds-border_left slds-border_right" style="border-radius:0.25rem;">
                     <div class="slds-grid">
                         <div class="rl-vertical_nav slds-col slds-border_right">
-                            <lightning-vertical-navigation class="slds-var-m-bottom_small" selected-item={activeMapping.Label} onselect={handleSectionSelect}>
+                            <lightning-vertical-navigation class="slds-var-m-bottom_small" selected-item={activeMappingObject.Label} onselect={handleSectionSelect}>
                                 <lightning-vertical-navigation-section label="Mappings">
                                     <template for:each={mappingList} for:item="mapping" for:index="index">
-                                        <div key={mappingList.Id}>
-                                            <lightning-vertical-navigation-item label={mapping.Label} name={mapping.Label}></lightning-vertical-navigation-item>
-                                        </div>
+                                        <lightning-vertical-navigation-item key={mapping.label} label={mapping.Label} name={mapping.Label} data-index={index}></lightning-vertical-navigation-item>
                                     </template>
                                 </lightning-vertical-navigation-section>
                             </lightning-vertical-navigation>
                             <div class="slds-var-m-around_small">
                                 <lightning-button
-                                icon-name="utility:add"
-                                label="New Mapping"
+                                    disabled={disableNewMappingButton}
+                                    icon-name="utility:add"
+                                    label="New Mapping"
+                                    onclick={createNewMapping}
                                 ></lightning-button>
                             </div>
                         </div>
                         <div class="rl-mapping_container slds-col slds-var-p-horizontal_large slds-var-p-bottom_large slds-p-top_small">
                             <div class="slds-grid slds-border_bottom  slds-grid_vertical-align-end slds-var-m-bottom_large">
-                                <div class="slds-col slds-var-m-bottom_small slds-text-heading_small">{activeSection}</div>
+                                <div class="slds-col slds-var-m-bottom_small slds-text-heading_small">{activeMappingObject.Label}</div>
                                 <div class="slds-col slds-var-m-bottom_small slds-grow-none">
                                     <lightning-button
                                         class="slds-button"
@@ -76,27 +76,14 @@
                             </div>
                             <h2 class="slds-text-title_caps slds-var-m-bottom_small">Field Mapping</h2>
                             <c-data-mapper
-                                setup-data={setupData}
-                                sf-fields={sfFields}
-                                tp-fields={tpFields}
+                                sf-fields={objFieldList}
+                                tp-fields={templateFieldList}
                                 sf-column-name="Salesforce"
                                 tp-column-name="Rightsline"
-                                sf-object={selectedObject}
-                                step="step1">
+                                sf-object={objValue}
+                                step="step1"
+                                outbound-mapping={activeMapping}>
                             </c-data-mapper> 
-                            <template if:true={isClient}>
-                                <h2 class="slds-text-title_caps slds-m-bottom_small">Field Mapping</h2>
-                                <c-data-mapper
-                                    setup-data={setupData} 
-                                    sf-fields={sfFields} 
-                                    tp-fields={tpFields} 
-                                    sf-column-name="Salesforce Field"
-                                    tp-column-name="rl Client Field"
-                                    sf-object={selectedObject}
-                                    step="step1"
-                                    has-no-unique>
-                                </c-data-mapper> 
-                            </template>
                             <div class="slds-grid slds-var-p-top_small slds-var-m-top_medium slds-border_top">
                                 <div class="slds-col"></div>
                                 <div class="slds-col slds-grow-none">

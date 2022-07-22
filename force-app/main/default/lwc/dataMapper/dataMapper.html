@@ -19,7 +19,7 @@
         </thead>
         <tbody>
             <!-- Table Empty State -->
-            <template if:false={hasMappings}>
+            <template if:false={hasMapping}>
                 <tr>
                     <td colspan={colSpan} class="slds-text-align_center">
                         <em class="slds-text-color_weak">No mappings have been added</em>
@@ -28,93 +28,24 @@
             </template>
             <!-- /Table Empty State -->
 
-            <template if:true={mapping}>
-                <template for:each={mapping.rows} for:item="row" for:index="rowIndex">
-                    <tr key={row.id}>
+            <template if:true={tpOptions}>
+                <template for:each={_outboundMapping} for:item="map" for:index="mapIndex">
+                    <tr key={map.rightslineApi}>
                         <td>
-                            <template if:true={row.tpOptions.length}>
-                                <template if:false={hasStaticTp}>
-                                    <c-picklist 
-                                        name={mapping.name} 
-                                        value={row.tpField}
-                                        options={row.tpOptions} 
-                                        searchable={mapping.searchable}
-                                        readonly={row.tpReq}
-                                        data-column="tp"
-                                        data-rowindex={rowIndex}
-                                        data-field-type={row.fieldType}
-                                        onselect={updateRow}
-                                        onclick={updateOptions}>
-                                    </c-picklist>
-                                </template>
-                            </template>
-                            <template if:false={row.tpOptions.length}>
-                                <input
-                                    class="slds-input"
-                                    name={mapping.name} 
-                                    value={row.tpField} 
-                                    onblur={updateRow}
-                                    data-column="tp"
-                                    data-rowindex={rowIndex}
-                                    data-field-type={row.fieldType}
-                                    onclick={updateOptions}/>
-                            </template>
-                            <template if:true={hasStaticTp}>
-                                <input
-                                    class="slds-input"
-                                    name={mapping.name} 
-                                    value={row.tpField}
-                                    data-column="tp"
-                                    data-rowindex={rowIndex}
-                                    data-field-type={row.fieldType}
-                                    readonly
-                                    disabled/>
-                            </template>
+                            {map.rightslineField}
                         </td>
                         <td>
-                            <template if:true={row.sfOptions.length}>
-                                <template if:false={hasStaticSf}>
-                                    <c-picklist 
-                                        name={mapping.name} 
-                                        value={row.sfField}
-                                        options={row.sfOptions} 
-                                        searchable={mapping.searchable}
-                                        readonly={row.sfReq}
-                                        data-column="sf"
-                                        data-rowindex={rowIndex}
-                                        data-field-type={row.fieldType}
-                                        onselect={updateRow}
-                                        onclick={updateOptions}>
-                                    </c-picklist>
-                                </template>
-                            </template>
-                            <template if:false={row.sfOptions.length}>
-                                <input
-                                    class="slds-input"
-                                    name={mapping.name}
-                                    value={row.sfField}
-                                    onblur={updateRow}
-                                    data-column="sf"
-                                    data-rowindex={rowIndex}
-                                    data-field-type={row.fieldType}
-                                    onclick={updateOptions}/>
-                            </template>
-                            <template if:true={hasStaticSf}>
-                                <input
-                                    class="slds-input"
-                                    name={mapping.name}
-                                    value={row.sfField}
-                                    data-column="sf"
-                                    data-rowindex={rowIndex}
-                                    data-field-type={row.fieldType}
-                                    readonly
-                                    disabled/>
-                            </template>
+                            <c-picklist
+                                value={map.sfField}
+                                options={sfOptions}
+                                required={map.required}
+                                onselect={selectField}
+                                data-mapindex={mapIndex}>
+                            </c-picklist>
                         </td>
-
                         <template if:true={showRemove}>
                             <td class="slds-text-align_center" style="width: 1px;">
-                                <span onclick={removeRow} data-rowindex={rowIndex}>
+                                <span onclick={removeRow} data-mapindex={mapIndex}>
                                     <lightning-button-icon icon-name="utility:delete" alternative-text="remove" title="Remove"
                                         size="medium" variant="container" disabled={row.deletable}></lightning-button-icon>
                                 </span>

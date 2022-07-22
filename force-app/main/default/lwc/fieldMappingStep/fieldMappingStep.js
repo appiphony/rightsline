@@ -1,7 +1,6 @@
 import { LightningElement, api, wire, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import saveData from '@salesforce/apex/setupAssistant.saveData';
-import getSetupData from '@salesforce/apex/setupAssistant.getData';
 import getData from '@salesforce/apex/fieldMappingStep.getData';
 import getRightslineFields from '@salesforce/apex/fieldMappingStep.getRightslineFields';
 import getSalesforceFields from '@salesforce/apex/fieldMappingStep.getSalesforceFields';
@@ -15,182 +14,46 @@ export default class FieldMappingStep extends LightningElement {
     @track templateList = [];
     @track objRecordTypeList = [];
     @track objFieldList = [];
+    @track templateFieldList = [];
 
-    @track mappingName;
-    @track activeMapping = {};
+    @track activeMappingObject = [
+        {
+        Label: '',
+        Salesforce_Object__c: '',
+        Salesforce_Object_Record_Type__c: '',
+        Rightsline_Template_Id__c: '',
+        Outbound_Mapping__c: ''
+        }
+    ];
+
+    @track activeMapping = [
+        {
+        rightslineField: '',
+        rightslineApi: '',
+        sfField: '',
+        required: false
+        }
+    ];
 
     @track templateValue = '';
     @track objValue = '';
     @track objRecordTypeValue = '';
 
+    @track loadMaps = false;
+    @track disableNewMappingButton = false;
+    @track isTemplateUpdate = false;
+    @track isObjectUpdate = false;
+
     get disableRecordType() {
-        return this.objRecordTypeList.length === 1;
+        return this.objRecordTypeList.length < 2;
     }
 
-    @track objectValue = 'account';
-    @track objectLabel = 'Account';
-
-    @track recordTypeValue = 'customerAccount';
-
-    @track rlValue = 'customer';
-
-    @track selectedObject = 'Account';
     @track setupData;
-    @track defaultMapping = {
-        rows: [
-            {
-                tpField: 'salutation',
-                sfField: 'sfield1'
-            },
-            {
-                tpField: 'phonePrimary',
-                sfField: 'sfield1'
-            },
-            {
-                tpField: 'email',
-                sfField: 'sfield1'
-            },
-            {
-                tpField: 'addressLine1',
-                sfField: 'sfield1'
-            },
-            {
-                tpField: 'hAddressLine1',
-                sfField: 'sfield1'
-            },
-            {
-                tpField: 'birthYear',
-                sfField: 'sfield1'
-            },
-            {
-                tpField: 'shippingCarrierName',
-                sfField: 'sfield1'
-            },
-            {
-                tpField: 'rlContactId',
-                sfField: 'sfield1'
-            },
-            {
-                tpField: 'firstName',
-                sfField: 'sfield1'
-            },
-            {
-                tpField: 'phoneOther',
-                sfField: 'sfield1'
-            }
-        ]
-    };
 
-    @track tpFields = [
-        {
-            label: 'Salutation',
-            value: 'salutation',
-            required: true,
-            column: 'tp',
-            fieldType: 'string'
-        },
-        {
-            label: 'Phone (Primary)',
-            value: 'phonePrimary',
-            required: true,
-            column: 'tp',
-            fieldType: 'integer'
-        },
-
-        {
-            label: 'Email',
-            value: 'email',
-            required: true,
-            column: 'tp',
-            fieldType: 'string'
-        },
-        {
-            label: 'Address Line 1',
-            value: 'addressLine1',
-            required: true,
-            column: 'tp',
-            fieldType: 'string'
-        },
-        {
-            label: '(H) Address Line 1',
-            value: 'hAddressLine1',
-            required: true,
-            column: 'tp',
-            fieldType: 'string'
-        },
-        {
-            label: 'Birth Year',
-            value: 'birthYear',
-            required: true,
-            column: 'tp',
-            fieldType: 'string'
-        },
-        {
-            label: 'Shipping Carrier Name',
-            value: 'shippingCarrierName',
-            required: true,
-            column: 'tp',
-            fieldType: 'string'
-        },
-        {
-            label: 'RL Contact ID',
-            value: 'rlContactId',
-            required: true,
-            column: 'tp',
-            fieldType: 'string'
-        },
-        {
-            label: 'First Name',
-            value: 'firstName',
-            required: true,
-            column: 'tp',
-            fieldType: 'string'
-        },
-        {
-            label: 'Phone (Other)',
-            value: 'phoneOther',
-            required: true,
-            column: 'tp',
-            fieldType: 'string'
-        },
-    ];
-
-    @track sfFields = [
-        {
-            label: 'SF String 1',
-            value: 'sfield1',
-            column: 'sf',
-            fieldType: 'string'
-        },
-        {
-            label: 'SF Integer 1',
-            value: 'sfield3',
-            column: 'sf',
-            fieldType: 'integer'
-        },
-        {
-            label: 'SF Integer 2',
-            value: 'sfield4',
-            column: 'sf',
-            fieldType: 'integer'
-
-        },
-        {
-            label: 'SF Boolean 1',
-            value: 'sfield5',
-            column: 'sf',
-            fieldType: 'boolean'
-        }
-    ];
-
-    get isClient() {
-        return this.activeSection === "client";
-    }
-
-    // constructor() {
-    //     super()
-    //     this.template.addEventListener('next', this.next.bind(this))
-    // }
+    /*constructor() {
+        super()
+        this.template.addEventListener('next', this.next.bind(this))
+    }*/
 
     @api
     show() {
@@ -200,28 +63,24 @@ export default class FieldMappingStep extends LightningElement {
     
                 if (parsedRes.isSuccess) {
                     debugger;
-                    this.mappingList = parsedRes.results.contactMappingList;
-                    this.objList = parsedRes.results.objList;
-                    this.templateList = parsedRes.results.templateList;
-    
-                    this.activeMapping = this.mappingList[0];
-                    this.templateValue = this.activeMapping.Rightsline_Template_Id__c;
-                    this.objValue = this.activeMapping.Salesforce_Object__c;
-
-                    getSalesforceFields({objName:this.objValue,getLookups:true}).then(res => {
-                        let parsedRes = JSON.parse(res);
+                    if (parsedRes.results.contactMappingList.length === 0) {
+                        this.createNewMapping();
+                    } else {
                         debugger;
-                        if (parsedRes.isSuccess) {
-                            debugger;
-                            this.objFieldList = parsedRes.fields[0].options;
-                            this.objRecordTypeList = parsedRes.recordTypeOptions;
-                            this.objRecordTypeValue = this.activeMapping.Salesforce_Object_Record_Type__c;
-                        } else {
-                            this.showToast('error', parsedRes.error);
-                        }
-                    }).catch(error => {
-                        this.showToast('error', error.message ? error.message : error.body.message);
-                    });
+                        this.mappingList = parsedRes.results.contactMappingList;
+                        this.objList = parsedRes.results.objList;
+                        this.templateList = parsedRes.results.templateList;
+        
+                        this.activeMappingObject = this.mappingList[0];
+                        this.loadMaps = true;
+                        this.templateValue = this.activeMappingObject.Rightsline_Template_Id__c;
+                        this.objValue = this.activeMappingObject.Salesforce_Object__c;
+
+                        this.updateSalesforceFields();
+                        this.objRecordTypeValue = this.activeMappingObject.Salesforce_Object_Record_Type__c;
+                        this.updateRightslineFields();
+                        this.activeMapping = JSON.parse(this.activeMappingObject.Outbound_Mapping__c);
+                    }
                 } else {
                     this.showToast('error', parsedRes.error);
                 }
@@ -233,37 +92,90 @@ export default class FieldMappingStep extends LightningElement {
         })
     }
 
-    updateTemplate(event) {
-        event.currentTarget.value = event.detail.value;
-        let value = event.detail.value;
-        this.templateValue = value;
+    updateSalesforceFields() {
+        debugger;
+        getSalesforceFields({objName:this.objValue, getLookups:true}).then(res => {
+            let parsedRes = JSON.parse(res);
+            debugger;
+            if (parsedRes.isSuccess) {
+                debugger;
+                this.objFieldList = parsedRes.results.fields[0].options;
+                this.objRecordTypeList = parsedRes.results.recordTypeOptions;
+                if (this.objRecordTypeList.length === 1) {
+                    this.objRecordTypeValue = this.objRecordTypeList[0].value;
+                }
+                if (this.isObjectUpdate) {
+                    this.isObjectUpdate = false;
+                    let templateLabel = '';
+                    for (let i = 0; i < this.templateList.length; i++) {
+                        if (this.templateList[i].value === this.templateValue) {
+                            templateLabel = this.templateList[i].label;
+                            break;
+                        }
+                    }
+                    this.activeMappingObject.Label = this.objValue + ' - ' + templateLabel;
+                }
+            } else {
+                this.showToast('error', parsedRes.error);
+            }
+        }).catch(error => {
+            this.showToast('error', error.message ? error.message : error.body.message);
+        });
+    }
+
+    updateRightslineFields() {
+        debugger;
         getRightslineFields({templateId:this.templateValue}).then(res => {
             let parsedRes = JSON.parse(res);
             debugger;
             if (parsedRes.isSuccess) {
                 debugger;
                 this.templateFieldList = parsedRes.results.templateFieldList;
+
+                if (this.isTemplateUpdate) {
+                    let templateLabel = '';
+                    for (let i = 0; i < this.templateList.length; i++) {
+                        if (this.templateList[i].value === this.templateValue) {
+                            templateLabel = this.templateList[i].label;
+                            break;
+                        }
+                    }
+                    this.activeMappingObject.Label = this.objValue + ' - ' + templateLabel;
+                    this.isTemplateUpdate = false;
+
+                    this.activeMapping = [];
+
+                    for (let i = 0; i < this.templateFieldList.length; i++) {
+                        this.activeMapping.push({
+                            'rightslineField': this.templateFieldList[i].label,
+                            'rightslineApi': this.templateFieldList[i].value,
+                            'sfField': '',
+                            'required': this.templateFieldList[i].required
+                        })
+                    }
+                }
+
+                console.log(this.activeMapping);
             } else {
                 this.showToast('error', parsedRes.error);
             }
         });
     }
 
+    updateTemplate(event) {
+        event.currentTarget.value = event.detail.value;
+        let value = event.detail.value;
+        this.templateValue = value;
+        this.isTemplateUpdate = true;
+        this.updateRightslineFields();
+    }
+
     updateObject(event){
         event.currentTarget.value = event.detail.value;
         let value = event.detail.value;
         this.objValue = value;
-        getSalesforceFields({objName:this.objValue,getLookups:true}).then(res => {
-            let parsedRes = JSON.parse(res);
-            debugger;
-            if (parsedRes.isSuccess) {
-                debugger;
-                this.objFieldList = parsedRes.fields[0].options;
-                this.objRecordTypeList = parsedRes.recordTypeOptions;
-            } else {
-                this.showToast('error', parsedRes.error);
-            }
-        });
+        this.isObjectUpdate = true;
+        this.updateSalesforceFields();
     }
 
     updateRecordType(event) {
@@ -288,7 +200,143 @@ export default class FieldMappingStep extends LightningElement {
 
     handleSectionSelect(event) {
         debugger;
-        this.activeMapping = this.mappingList[event.detail.index];
+        if(this.loadMaps && this.activeMappingObject.Label !== 'New Mapping') {
+            debugger;
+            let selectedMapping = event.detail.name;
+            for(let i = 0; i < this.mappingList.length; i++) {
+                if (this.mappingList[i].Label === selectedMapping) {
+                    this.activeMappingObject = this.mappingList[i];
+                    break;
+                }
+            }
+            this.objValue = this.activeMappingObject.Salesforce_Object__c;
+            this.objRecordTypeValue = this.activeMappingObject.Salesforce_Object_Record_Type__c;
+            this.templateValue = this.activeMappingObject.Rightsline_Template_Id__c;
+            this.updateSalesforceFields();
+            this.updateRightslineFields();
+            this.activeMapping = JSON.parse(this.activeMappingObject.Outbound_Mapping__c);
+        }
+    }
+
+    createNewMapping() {
+        this.disableNewMappingButton = true;
+        debugger;
+        this.activeMappingObject = {
+            Outbound_Mapping__c: [],
+            Salesforce_Object__c:'',
+            Salesforce_Object_Record_Type__c:'',
+            Rightsline_Template_Id__c:'',
+            Label:'New Mapping'
+        };
+
+        this.activeMapping = [];
+
+        this.objRecordTypeList = [];
+        this.templateFieldList = [];
+        this.objValue = '';
+        this.templateValue = '';
+        this.objRecordTypeValue = '';
+        this.mappingList.push(this.activeMappingObject);
+    }
+
+    deleteMapping(event) {
+        debugger;
+        if(this.activeMappingObject.Label === 'New Mapping'){
+            this.disableNewMappingButton = false;
+        }
+
+        deleteContactMapping({contactMappingLabel: this.activeMappingObject.Label}).then(res => {
+            let parsedRes = JSON.parse(res);
+            debugger;
+            if (parsedRes.isSuccess) {
+                this.showToast('success', 'Mapping deleted successfully!');
+                for (let i = 0; i < this.mappingList.length; i++) {
+                    if (this.mappingList[i] === this.activeMappingObject) {
+                        this.mappingList.splice(i,1);
+                        break;
+                    }
+                }
+                this.activeMappingObject = this.mappingList[0];
+                this.objValue = this.activeMappingObject.Salesforce_Object__c;
+                this.objRecordTypeValue = this.activeMappingObject.Salesforce_Object_Record_Type__c;
+                this.templateValue = this.activeMappingObject.Rightsline_Template_Id__c;
+                this.updateSalesforceFields();
+                this.updateRightslineFields();
+                this.activeMapping = JSON.parse(this.activeMappingObject.Outbound_Mapping__c);
+                if (this.mappingList.length === 0) {
+                    this.createNewMapping();
+                }
+            } else {
+                this.showToast('error', parsedRes.error);
+                if(this.activeMappingObject.Label === 'New Mapping'){
+                    this.disableNewMappingButton = true;
+                }
+            }
+        }).catch(error => {
+            this.showToast('error', error.message ? error.message : error.body.message);
+            if(this.activeMappingObject.Label === 'New Mapping'){
+                this.disableNewMappingButton = true;
+            }
+        })
+
+        this.template.querySelector('c-modal').hide();
+    }
+
+    saveMapping (event) {
+        debugger;
+
+        let resObj = this.template.querySelector('c-data-mapper').retrieveOutboundMapping();
+
+        if (resObj.valid === true) {
+            let templateLabel = '';
+            for (let i = 0; i < this.templateList.length; i++) {
+                if (this.templateList[i].value === this.templateValue) {
+                    templateLabel = this.templateList[i].label;
+                    break;
+                }
+            }
+
+            let savePayload = {
+                DeveloperName: this.objValue + '_' + templateLabel,
+                Label: this.objValue + ' - ' + templateLabel,
+                Outbound_Mapping__c: JSON.stringify(resObj.outboundMapping),
+                Salesforce_Object__c: this.objValue,
+                Salesforce_Object_Record_Type__c: this.objRecordTypeValue,
+                Rightsline_Template_Id__c: this.templateValue
+            };
+
+            let count = 0;
+            for (let i = 0; i < this.mappingList; i++) {
+                if (this.mappingList[i].Label === this.objValue + ' - ' + templateLabel) {
+                    count++;
+                    if (count === 2) {
+                        break;
+                    }
+                    this.activeMappingObject = savePayload;
+                    this.mappingList[i] = this.activeMappingObject;
+                    this.activeMapping = resObj.outboundMapping;
+                }
+            }
+
+            if (count < 2) {
+    
+                saveContactMapping({jsonString:JSON.stringify(savePayload)}).then(res => {
+                    let parsedRes = JSON.parse(res);
+                    debugger;
+                    if (parsedRes.isSuccess) {
+                        this.showToast('success', 'Mapping saved successfully!');
+                    } else {
+                        this.showToast('error', parsedRes.error);
+                    }
+                }).catch(error => {
+                    this.showToast('error', error.message ? error.message : error.body.message);
+                })
+            } else {
+                this.showToast('error', 'You already have this combination of objects mapped!')
+            }
+        } else {
+            this.showToast('error', 'Please map all required fields.');
+        }
     }
 
     next(event) {
@@ -304,6 +352,7 @@ export default class FieldMappingStep extends LightningElement {
             }).then(response => {
                 let responseData = JSON.parse(response);
                 if(responseData.isSuccess) {
+                    this.loadMaps = false;
                     this.dispatchEvent(new CustomEvent('next', {
                         bubbles: true,
                         composed: true

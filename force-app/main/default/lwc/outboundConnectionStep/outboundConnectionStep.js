@@ -11,7 +11,6 @@ export default class outboundConnectionStep extends LightningElement {
 
     @api
     show() {
-        debugger;
         return new Promise((resolve, reject) => {
             getData().then(res => {
                 let parsedRes = JSON.parse(res);
