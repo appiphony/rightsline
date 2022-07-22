@@ -15,7 +15,7 @@ export default class PackageLogConfigStep extends LightningElement {
             label:'All Activity',
             value:'allActivity'
         }
-    ]
+    ];
 
     get disableDeletelogs() {
         return this.currentLogRecordCount === 0;
