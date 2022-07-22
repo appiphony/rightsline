@@ -5,8 +5,9 @@ public class AWSSignature {
     String key = ''; //AWS key
     String secret = ''; //AWS Secret key
     String host = ''; //nsys.inf4mation.com
-    string resource='';
-    string method;
+    String resource='';
+    String method;
+    String body;
     
     //date for headers and the credential string
     String amzDate = Datetime.now().formatGMT('yyyyMMdd\'T\'HHmmss\'Z\'');
@@ -27,7 +28,7 @@ public class AWSSignature {
         String signedHeaders =signedHeaders();
         
         //Task1. Step 6 - Use a hash (digest) function like SHA256 to create a hashed value from the payload in the body of the HTTP or HTTPS request. 
-        Blob payload = Blob.valueOf('');
+        Blob payload = Blob.valueOf(body);
         String payloadHash = EncodingUtil.convertToHex(Crypto.generateDigest('SHA-256', payload));
         
         //Task1. Step 7: Combine elements to create create canonical request  
@@ -119,6 +120,11 @@ public class AWSSignature {
     public void setMethod(string mthd)
     {
         method=mthd;
+    }
+
+    public void setBody(string bdy)
+    {
+        body = bdy;
     }
     
     public HttpRequest createSigntaureRequest(){

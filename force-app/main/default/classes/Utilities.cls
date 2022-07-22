@@ -47,7 +47,8 @@ public with sharing class Utilities {
         //aws.setUrl('patient.sysinfo.com','api/patient');
         aws.setUrl('ris.rightsline.com', endPoint);
         aws.setMethod(httpMethod);
-        
+        aws.setBody(body);
+
         HttpRequest request = aws.createSigntaureRequest();
         request.setHeader('Content-Type','application/json');
         request.setHeader('x-api-key', setupMetadata.Api_Key__c);
@@ -58,12 +59,14 @@ public with sharing class Utilities {
         }
 
         HttpResponse response = new Http().send(request);
+        System.debug(response);
         
         //Retry callout if credentials are expired
         if (response.getStatusCode() == 403) {
             Map<String, Object> bodyMap = (Map<String, Object>)JSON.deserializeUntyped(response.getBody());
-
+            
             String error = (String)bodyMap.get('message');
+            System.debug(error);
             if (error.contains('The security token included in the request is expired')) {
                 HttpResponse credsResponse = tempCredsCallout(setupMetadata.Api_Key__c, setupMetadata.Access_Key__c, setupMetadata.Secret_Key__c);
                 if (credsResponse.getStatusCode() == 200) {
