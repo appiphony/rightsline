@@ -30,7 +30,8 @@ public with sharing class syncSchedulerStep {
     public static String scheduleInitialContactSyncJob(String syncTime) {
         ResponseData rd = new ResponseData();
         try {
-            //
+            //Id jobId = Database.executeBatch(new batchInitialContactSync(), 2000);
+            //rd.put('jobId', jobId);
         } catch (Exception e) {
             rd.addError(e);
         }

@@ -5,7 +5,7 @@ import saveData from '@salesforce/apex/setupAssistant.saveData';
 
 export default class DebugLogStep extends LightningElement {
 
-    @track logType = 'allActivity';
+    @track logType = 'errorsOnly';
     @track currentLogRecordCount = 0;
     @track logLimit = 10000;
     @track isLoading = false;
