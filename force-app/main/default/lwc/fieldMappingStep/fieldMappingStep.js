@@ -6,6 +6,7 @@ import getRightslineFields from '@salesforce/apex/fieldMappingStep.getRightsline
 import getSalesforceFields from '@salesforce/apex/fieldMappingStep.getSalesforceFields';
 import saveContactMapping from '@salesforce/apex/fieldMappingStep.saveContactMapping';
 import deleteContactMapping from '@salesforce/apex/fieldMappingStep.deleteContactMapping';
+import emptyState from '@salesforce/resourceUrl/emptyState';
 
 export default class FieldMappingStep extends LightningElement {
 
@@ -15,6 +16,9 @@ export default class FieldMappingStep extends LightningElement {
     @track objRecordTypeList = [];
     @track objFieldList = [];
     @track templateFieldList = [];
+    //Empty state
+    @track emptyState = emptyState;
+    @track hasMappings = '';
 
     @track activeMappingObject = [
         {
