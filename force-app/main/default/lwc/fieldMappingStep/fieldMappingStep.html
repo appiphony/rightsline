@@ -29,7 +29,7 @@
                         </div>
                         <div class="rl-mapping_container slds-col slds-var-p-horizontal_large slds-var-p-bottom_large slds-p-top_small">
                             <!-- Empty state -->
-                            <template if:false={hasMappings}>
+                            <template if:false={hasMappingList}>
                                 <div class="slds-text-align_center slds-var-p-around_xx-large">
                                     <img class="slds-var-m-bottom_large rl-empty-state" src={emptyState}/>
                                     <h2 class="slds-var-m-bottom_medium slds-text-heading_small">You haven't created any contact mappings. Add a new mapping to get started.</h2>
@@ -42,7 +42,7 @@
                                 </div>
                             </template>
                             <!-- /Empty state -->
-                            <template if:true={hasMappings}>
+                            <template if:true={hasMappingList}>
                                 <div class="slds-grid slds-border_bottom slds-grid_vertical-align-end slds-var-m-bottom_large">
                                     <div class="slds-col slds-var-m-bottom_small slds-text-heading_small">{activeMappingObject.Label}</div>
                                     <div class="slds-col slds-var-m-bottom_small slds-grow-none">

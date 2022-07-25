@@ -19,6 +19,7 @@ export default class FieldMappingStep extends LightningElement {
     //Empty state
     @track emptyState = emptyState;
     @track hasMappings = '';
+    @track loading = false;
 
     @track activeMappingObject = [
         {
@@ -46,7 +47,6 @@ export default class FieldMappingStep extends LightningElement {
     @track loadMaps = false;
     @track disableNewMappingButton = false;
     @track isTemplateUpdate = false;
-    @track isObjectUpdate = false;
     @track hasMappingList = false;
 
     get disableRecordType() {
@@ -63,6 +63,7 @@ export default class FieldMappingStep extends LightningElement {
     @api
     show() {
         debugger;
+        this.loading = true;
         return new Promise((resolve, reject) => {
             getData().then(res => {
                 let parsedRes = JSON.parse(res);
@@ -91,6 +92,7 @@ export default class FieldMappingStep extends LightningElement {
                         this.objRecordTypeValue = this.activeMappingObject.Salesforce_Object_Record_Type__c;
                         this.updateRightslineFields();
                         this.activeMapping = JSON.parse(this.activeMappingObject.Outbound_Mapping__c);
+                        this.loading = false;
                     }
                 } else {
                     this.showToast('error', parsedRes.error);
@@ -99,11 +101,13 @@ export default class FieldMappingStep extends LightningElement {
                 this.showToast('error', error.message ? error.message : error.body.message);
             }).finally(() => {
                 resolve()
+                this.loading = false;
             })
         })
     }
 
     updateSalesforceFields() {
+        this.disableNewMappingButton = false;
           //debugger;
         getSalesforceFields({objName:this.objValue, getLookups:true}).then(res => {
             let parsedRes = JSON.parse(res);
@@ -114,16 +118,6 @@ export default class FieldMappingStep extends LightningElement {
                 this.objRecordTypeList = parsedRes.results.recordTypeOptions;
                 if (this.objRecordTypeList.length === 1) {
                     this.objRecordTypeValue = this.objRecordTypeList[0].value;
-                }
-                if (this.isObjectUpdate) {
-                    this.isObjectUpdate = false;
-                    let templateLabel = '';
-                    for (let i = 0; i < this.templateList.length; i++) {
-                        if (this.templateList[i].value === this.templateValue) {
-                            templateLabel = this.templateList[i].label;
-                            break;
-                        }
-                    }
                 }
             } else {
                 this.showToast('error', parsedRes.error);
@@ -143,14 +137,6 @@ export default class FieldMappingStep extends LightningElement {
                 this.templateFieldList = parsedRes.results.templateFieldList;
 
                 if (this.isTemplateUpdate) {
-                    let templateLabel = '';
-                    for (let i = 0; i < this.templateList.length; i++) {
-                        if (this.templateList[i].value === this.templateValue) {
-                            templateLabel = this.templateList[i].label;
-                            break;
-                        }
-                    }
-                    
                     this.isTemplateUpdate = false;
 
                     this.activeMapping = [];
@@ -184,7 +170,6 @@ export default class FieldMappingStep extends LightningElement {
         event.currentTarget.value = event.detail.value;
         let value = event.detail.value;
         this.objValue = value;
-        this.isObjectUpdate = true;
         this.updateSalesforceFields();
     }
 
@@ -209,6 +194,7 @@ export default class FieldMappingStep extends LightningElement {
     }
 
     handleSectionSelect(event) {
+        this.loading = true;
         console.log('event.detail: ' + event.detail.name);
         if(this.loadMaps && this.activeMappingObject.Label !== 'New Mapping') {
             let selectedMapping = event.detail.name;
@@ -226,7 +212,9 @@ export default class FieldMappingStep extends LightningElement {
             this.updateSalesforceFields();
             this.updateRightslineFields();
             this.activeMapping = JSON.parse(mappingSelectionObject.Outbound_Mapping__c);
+            this.loading = false;
         }
+        this.loading = false;
     }
 
     createNewMapping() {
@@ -249,9 +237,11 @@ export default class FieldMappingStep extends LightningElement {
         this.objRecordTypeValue = '';
         this.mappingList.push(this.activeMappingObject);
         this.hasMappingList = true;
+        this.loading = false;
     }
 
     deleteMapping(event) {
+        this.loading = true;
           //debugger;
         if(this.activeMappingObject.Label === 'New Mapping'){
             this.disableNewMappingButton = false;
@@ -277,6 +267,7 @@ export default class FieldMappingStep extends LightningElement {
                     this.activeMapping = JSON.parse(this.activeMappingObject.Outbound_Mapping__c);
                 }
             }
+            this.loading = false;
         } else {
             deleteContactMapping({contactMappingLabel: this.activeMappingObject.Label}).then(res => {
                 let parsedRes = JSON.parse(res);
@@ -312,6 +303,7 @@ export default class FieldMappingStep extends LightningElement {
                     this.disableNewMappingButton = true;
                 }
             })
+            this.loading = false;
         }
 
         this.template.querySelector('c-modal').hide();
