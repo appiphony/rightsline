@@ -1,6 +1,10 @@
 <template>
     <c-step title="" header="Contact Field Mapping" container-size="large" next-label="Finish" onnext={handleNext} back-hidden>
-        <p slot="description">In order to determine how Salesforce represents Rightsline data in this org, you'll need to map fields from Rightsline contact templates to the Salesforce records of your choice. You can configure as many object and record type mappings as is necessary for your organization.</p> 
+        <p slot="description">In order to determine how Salesforce represents Rightsline data in this org, you'll need to map fields from Rightsline contact templates to the Salesforce records of your choice. You can configure as many object and record type mappings as is necessary for your organization.</p>
+        <lightning-spinner 
+        if:true={loading}
+        alternative-text="spinner"
+        ></lightning-spinner> 
         <!-- Selected Object Mapping -->
                 <div class="slds-border_top slds-border_bottom slds-border_left slds-border_right" style="border-radius:0.25rem;">
                     <div class="slds-grid">
@@ -24,86 +28,102 @@
                             </div>
                         </div>
                         <div class="rl-mapping_container slds-col slds-var-p-horizontal_large slds-var-p-bottom_large slds-p-top_small">
-                            <div class="slds-grid slds-border_bottom  slds-grid_vertical-align-end slds-var-m-bottom_large">
-                                <div class="slds-col slds-var-m-bottom_small slds-text-heading_small">{activeMappingObject.Label}</div>
-                                <div class="slds-col slds-var-m-bottom_small slds-grow-none">
+                            <!-- Empty state -->
+                            <template if:false={hasMappings}>
+                                <div class="slds-text-align_center slds-var-p-around_xx-large">
+                                    <img class="slds-var-m-bottom_large rl-empty-state" src={emptyState}/>
+                                    <h2 class="slds-var-m-bottom_medium slds-text-heading_small">You haven't created any contact mappings. Add a new mapping to get started.</h2>
                                     <lightning-button
-                                        class="slds-button"
-                                        variant="destructive-text"
-                                        icon-name="utility:delete"
-                                        onclick={openDeleteModal}
-                                        label="Delete Mapping"
-                                    ></lightning-button>
-                                    <lightning-button
-                                        class="slds-button"
-                                        icon-name="utility:check"
-                                        label="Save Mapping"
-                                        onclick={saveMapping}
+                                        disabled={disableNewMappingButton}
+                                        icon-name="utility:add"
+                                        label="New Mapping"
+                                        onclick={createNewMapping}
                                     ></lightning-button>
                                 </div>
-                            </div>
-                            <h2 class="slds-text-title_caps slds-var-m-bottom_x-small">Object Mapping</h2>
-                            <div class="slds-grid slds-gutters slds-gutters_xx-small slds-var-m-bottom_x-small">
-                                <div class="slds-col slds-size_1-of-2">
-                                    <c-picklist
-                                        label="Rightsline Template"
-                                        options={templateList}
-                                        value={templateValue}
-                                        onselect={updateTemplate}
-                                        placeholder="-- Select a field --"
-                                    ></c-picklist>
+                            </template>
+                            <!-- /Empty state -->
+                            <template if:true={hasMappings}>
+                                <div class="slds-grid slds-border_bottom slds-grid_vertical-align-end slds-var-m-bottom_large">
+                                    <div class="slds-col slds-var-m-bottom_small slds-text-heading_small">{activeMappingObject.Label}</div>
+                                    <div class="slds-col slds-var-m-bottom_small slds-grow-none">
+                                        <lightning-button
+                                            class="slds-button"
+                                            variant="destructive-text"
+                                            icon-name="utility:delete"
+                                            onclick={openDeleteModal}
+                                            label="Delete Mapping"
+                                        ></lightning-button>
+                                        <lightning-button
+                                            class="slds-button"
+                                            icon-name="utility:check"
+                                            label="Save Mapping"
+                                            onclick={saveMapping}
+                                        ></lightning-button>
+                                    </div>
                                 </div>
-                                <div class="slds-col slds-size_1-of-2"></div>
-                            </div>
-                            <div class="slds-grid slds-gutters slds-gutters_xx-small slds-var-m-bottom_large">
-                                <div class="slds-col slds-size_1-of-2">
-                                    <c-picklist
-                                        label="Salesforce Object"
-                                        options={objList}
-                                        value={objValue}
-                                        onselect={updateObject}
-                                        placeholder="-- Select a field --"
-                                    ></c-picklist>
+                                <h2 class="slds-text-title_caps slds-var-m-bottom_x-small">Object Mapping</h2>
+                                <div class="slds-grid slds-gutters slds-gutters_xx-small slds-var-m-bottom_x-small">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <c-picklist
+                                            label="Rightsline Template"
+                                            options={templateList}
+                                            value={templateValue}
+                                            onselect={updateTemplate}
+                                            placeholder="-- Select a field --"
+                                        ></c-picklist>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2"></div>
                                 </div>
-                                <div class="slds-col slds-size_1-of-2">
-                                    <c-picklist
-                                        label="Salesforce Record Type"
-                                        disabled={disableRecordType}
-                                        value={objRecordTypeValue}
-                                        options={objRecordTypeList}
-                                        onselect={updateRecordType}
-                                        placeholder="-- Select a field --"
-                                    ></c-picklist>
+                                <div class="slds-grid slds-gutters slds-gutters_xx-small slds-var-m-bottom_large">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <c-picklist
+                                            label="Salesforce Object"
+                                            options={objList}
+                                            value={objValue}
+                                            onselect={updateObject}
+                                            placeholder="-- Select a field --"
+                                        ></c-picklist>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <c-picklist
+                                            label="Salesforce Record Type"
+                                            disabled={disableRecordType}
+                                            value={objRecordTypeValue}
+                                            options={objRecordTypeList}
+                                            onselect={updateRecordType}
+                                            placeholder="-- Select a field --"
+                                        ></c-picklist>
+                                    </div>
                                 </div>
-                            </div>
-                            <h2 class="slds-text-title_caps slds-var-m-bottom_small">Field Mapping</h2>
-                            <c-data-mapper
-                                sf-fields={objFieldList}
-                                tp-fields={templateFieldList}
-                                sf-column-name="Salesforce"
-                                tp-column-name="Rightsline"
-                                sf-object={objValue}
-                                step="step1"
-                                outbound-mapping={activeMapping}>
-                            </c-data-mapper> 
-                            <div class="slds-grid slds-var-p-top_small slds-var-m-top_medium slds-border_top">
-                                <div class="slds-col"></div>
-                                <div class="slds-col slds-grow-none">
-                                    <lightning-button
-                                        class="slds-button"
-                                        variant="destructive-text"
-                                        icon-name="utility:delete"
-                                        onclick={openDeleteModal}
-                                        label="Delete Mapping"
-                                    ></lightning-button>
-                                    <lightning-button
-                                        class="slds-button"
-                                        icon-name="utility:check"
-                                        onclick={saveMapping}
-                                        label="Save Mapping"
-                                    ></lightning-button>
+                                <h2 class="slds-text-title_caps slds-var-m-bottom_small">Field Mapping</h2>
+                                <c-data-mapper
+                                    sf-fields={objFieldList}
+                                    tp-fields={templateFieldList}
+                                    sf-column-name="Salesforce"
+                                    tp-column-name="Rightsline"
+                                    sf-object={objValue}
+                                    step="step1"
+                                    outbound-mapping={activeMapping}>
+                                </c-data-mapper> 
+                                <div class="slds-grid slds-var-p-top_small slds-var-m-top_medium slds-border_top">
+                                    <div class="slds-col"></div>
+                                    <div class="slds-col slds-grow-none">
+                                        <lightning-button
+                                            class="slds-button"
+                                            variant="destructive-text"
+                                            icon-name="utility:delete"
+                                            onclick={openDeleteModal}
+                                            label="Delete Mapping"
+                                        ></lightning-button>
+                                        <lightning-button
+                                            class="slds-button"
+                                            icon-name="utility:check"
+                                            onclick={saveMapping}
+                                            label="Save Mapping"
+                                        ></lightning-button>
+                                    </div>
                                 </div>
-                            </div>
+                            </template>
                         </div>
                     </div>
                 </div>
