@@ -49,7 +49,10 @@ public with sharing class outboundConnectionStep {
     public static String clearCreds() {
         ResponseData rd = new ResponseData();
         try {
+            System.debug('START OF CLEAR CREDS');
             Setup_Metadata__mdt setupMetadata = [SELECT Id, Label FROM Setup_Metadata__mdt WHERE Label = 'Default' LIMIT 1];
+
+            System.debug('QUERIED SETUPMETADATA');
 
             Utilities.upsertMetadata('Setup_Metadata__mdt.' + setupMetadata.Label,
                                     setupMetadata.Label,
@@ -66,6 +69,7 @@ public with sharing class outboundConnectionStep {
                                                     '', 
                                                     ''}
                                     );
+            System.debug('CLEARED SETUPMETADATA');
         } catch (Exception e) {
             rd.addError(e);
         }
