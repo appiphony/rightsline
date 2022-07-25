@@ -72,6 +72,7 @@ export default class FieldMappingStep extends LightningElement {
                     this.loadMaps = true;
 
                     if (parsedRes.results.contactMappingList.length === 0) {
+                        this.mappingList = [];
                         this.createNewMapping();
                     } else {
                           //debugger;

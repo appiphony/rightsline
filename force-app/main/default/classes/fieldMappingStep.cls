@@ -66,11 +66,14 @@ public with sharing class fieldMappingStep {
 
                 for(Object field : responseList) {
                     Map<String, Object> fieldMap = (Map<String, Object>)field;
-                    fieldList.add(new Map<String, Object> {
-                        'label' => fieldMap.get('fieldName'),
-                        'value' => fieldMap.get('label'),
-                        'required' => fieldMap.get('required')
-                    });
+
+                    if (fieldMap.get('editable') == true) {
+                        fieldList.add(new Map<String, Object> {
+                            'label' => fieldMap.get('fieldName'),
+                            'value' => fieldMap.get('label'),
+                            'required' => fieldMap.get('required')
+                        });
+                    }
                 }
 
                 rd.put('templateFieldList', fieldList);
