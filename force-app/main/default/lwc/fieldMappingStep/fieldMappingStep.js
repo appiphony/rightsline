@@ -108,7 +108,7 @@ export default class FieldMappingStep extends LightningElement {
             let parsedRes = JSON.parse(res);
               //debugger;
             if (parsedRes.isSuccess) {
-                  //debugger;
+                debugger;
                 this.objFieldList = parsedRes.results.fields[0].options;
                 this.objRecordTypeList = parsedRes.results.recordTypeOptions;
                 if (this.objRecordTypeList.length === 1) {

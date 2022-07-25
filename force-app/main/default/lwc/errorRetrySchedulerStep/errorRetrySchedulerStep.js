@@ -83,4 +83,15 @@ export default class errorRetrySchedulerStep extends LightningElement {
             this.showToast('error', error.message ? error.message : error.body.message);
         });
     }
+
+    showToast(type, message) {
+        this.dispatchEvent(new CustomEvent('showtoast', {
+            detail: {
+                message : message,
+                variant : type
+            },
+            bubbles: true,
+            composed: true
+        }));
+    }
 }

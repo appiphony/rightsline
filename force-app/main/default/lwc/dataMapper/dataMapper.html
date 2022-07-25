@@ -32,7 +32,7 @@
                 <template for:each={_outboundMapping} for:item="map" for:index="mapIndex">
                     <tr key={map.rightslineApi}>
                         <td>
-                            {map.rightslineField}
+                            {map.rightslineField}<template if:true={map.required}>*</template>
                         </td>
                         <td>
                             <c-picklist
